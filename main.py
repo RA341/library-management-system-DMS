@@ -35,7 +35,13 @@ class MainWindow:
         # Setting Main Page
         self.ui.stackedWidget.setCurrentWidget(self.ui.main_page)
 
+        # Initilizing books,users,issued lists
+        self.GetUsersData()
+        self.GetBooksData()
+        self.GetIssuedData()
+
         # Initialing all pages
+        self.MainPage()
         self.IssuePage()
         self.ReturnPage()
         self.BooksPage()
@@ -47,11 +53,11 @@ class MainWindow:
 
     def ui_elements(self):
         # Home Page
-        self.issue_page = self.ui.issue_page
-        self.return_page = self.ui.return_page
-        self.books_page = self.ui.book_page
-        self.users_page = self.ui.user_page
-        self.books_status_page = self.ui.book_status_page
+        self.issue_button = self.ui.issue_button
+        self.return_button = self.ui.return_button
+        self.books_button = self.ui.book_button
+        self.users_button = self.ui.user_button
+        self.bk_status_button = self.ui.book_status_button
 
         # Issue Page
         self.issue_page_back_button = self.ui.issue_back_button
@@ -69,20 +75,27 @@ class MainWindow:
 
         # Book Page
         self.books_page_back_button = self.ui.book_back_Button
-
+        self.book_table = self.ui.book_tableWidget
+        
         # Users page
         self.users_page_back_button = self.ui.user_back_button
+        self.user_table = self.ui.user_tableWidget
 
         # Book Status page
-        self.bkstatus_back_button = self.ui.book_status_back_button
+        self.bk_status_back_button = self.ui.book_status_back_button
+    
+    def MainPage(self):
+        self.issue_button.clicked.connect(self.goto_issue_page)
+        self.return_button.clicked.connect(self.goto_return_page)
+        self.books_button.clicked.connect(self.goto_book_page)
+        self.users_button.clicked.connect(self.goto_user_page)
+        self.bk_status_button.clicked.connect(self.goto_BookStatus_page)
     def IssuePage(self):
-        self.LoadBooksData()
-        self.LoadUsersData()
-        self.ui.issue_button.clicked.connect(self.goto_issue_page)
-        self.issue_page_user_combo_box = self.issue_page_user_combo_box
-        self.issue_page_book_combo_box = self.issue_page_book_combo_box
+        # Getting late user and books list
+        self.GetBooksData()
+        self.GetUsersData()
 
-        self.issue_page_back_button.clicked.connect(self.goto_mainPage_page)
+        self.issue_page_back_button.clicked.connect(self.goto_main_page)
         self.issue_page_book_combo_box.activated.connect(self.BookComboAction)
         self.issue_page_user_combo_box.activated.connect(self.UserComboAction)
         self.BookComboBoxData()
@@ -111,22 +124,18 @@ class MainWindow:
         self.issue_page_return_date_label.setText(str(retun.day) + "-" + str(retun.month) + "-" + str(retun.year))
 
     def ReturnPage(self):
-        self.ui.return_button.clicked.connect(self.goto_return_page)
-        self.return_page_back_button.clicked.connect(self.goto_mainPage_page)
+        self.return_page_back_button.clicked.connect(self.goto_main_page)
 
     def BooksPage(self):
-        self.ui.book_button.clicked.connect(self.goto_book_page)
-        self.books_page_back_button.clicked.connect(self.goto_mainPage_page)
+        self.books_page_back_button.clicked.connect(self.goto_main_page)
         self.LoadBooksData()
 
     def UsersPage(self):
-        self.users_page_back_button.clicked.connect(self.goto_mainPage_page)
-        self.ui.user_button.clicked.connect(self.goto_user_page)
+        self.users_page_back_button.clicked.connect(self.goto_main_page)
         self.LoadUsersData()
 
     def BookStatusPage(self):
-        self.ui.book_status_button.clicked.connect(self.goto_BookStatus_page)
-        self.bkstatus_back_button.clicked.connect(self.goto_mainPage_page)
+        self.bk_status_back_button.clicked.connect(self.goto_main_page)
 
     # User and book lists function
     def GetBookColumns(self):
@@ -147,14 +156,14 @@ class MainWindow:
 
     def GetIssuedColumns(self):
         self.cursor.execute("show columns from issued")
-        self.books_column_names = [x[0] for x in self.cursor.fetchall()]
+        self.issued_column_names = [x[0] for x in self.cursor.fetchall()]
 
     def GetIssuedData(self):
         self.cursor.execute("select * from issued")
         self.issued_books = [x for x in self.cursor.fetchall()]
 
+    # table data for user and books page
     def LoadBooksData(self):
-        self.BookTable = self.ui.book_tableWidget
         self.GetBooksData()
         self.GetBookColumns()
 
@@ -164,25 +173,26 @@ class MainWindow:
         self.books_column_names[2] = "Author Name"
 
         # Adding columns to table
-        self.BookTable.setRowCount(len(self.books_list))
-        self.BookTable.setColumnCount(len(self.books_column_names))
-        self.BookTable.setHorizontalHeaderLabels(self.books_column_names)
-
-        header = self.BookTable.horizontalHeader()
+        self.book_table.setRowCount(len(self.books_list))
+        self.book_table.setColumnCount(len(self.books_column_names))
+        self.book_table.setHorizontalHeaderLabels(self.books_column_names)
+        # resizing columns
+        header = self.book_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
-
+        
+        # adding data into tables
         row = 0
 
         for book in self.books_list:
-            self.BookTable.setItem(row, 0, QtWidgets.QTableWidgetItem(str(book[0])))
-            self.BookTable.setItem(row, 1, QtWidgets.QTableWidgetItem(book[1]))
-            self.BookTable.setItem(row, 2, QtWidgets.QTableWidgetItem(book[2] + " " + book[3]))
+            self.book_table.setItem(row, 0, QtWidgets.QTableWidgetItem(str(book[0])))
+            self.book_table.setItem(row, 1, QtWidgets.QTableWidgetItem(book[1]))
+            self.book_table.setItem(row, 2, QtWidgets.QTableWidgetItem(book[2] + " " + book[3]))
             row += 1
 
     def LoadUsersData(self):
-        self.UserTable = self.ui.user_tableWidget
+
         self.GetUserColumns()
         self.GetUsersData()
 
@@ -190,11 +200,11 @@ class MainWindow:
         self.users_column_names[0] = "User ID"
         self.users_column_names[1] = "User Name"
 
-        self.UserTable.setRowCount(len(self.user_list))
-        self.UserTable.setColumnCount(len(self.users_column_names))
-        self.UserTable.setHorizontalHeaderLabels(self.users_column_names)
+        self.user_table.setRowCount(len(self.user_list))
+        self.user_table.setColumnCount(len(self.users_column_names))
+        self.user_table.setHorizontalHeaderLabels(self.users_column_names)
 
-        header = self.UserTable.horizontalHeader()
+        header = self.user_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
@@ -202,12 +212,12 @@ class MainWindow:
         row = 0
 
         for user in self.user_list:
-            self.UserTable.setItem(row, 0, QtWidgets.QTableWidgetItem(str(user[0])))
-            self.UserTable.setItem(row, 1, QtWidgets.QTableWidgetItem(user[1] + " " + user[2]))
-            self.UserTable.setItem(row, 2, QtWidgets.QTableWidgetItem(str(user[3])))
+            self.user_table.setItem(row, 0, QtWidgets.QTableWidgetItem(str(user[0])))
+            self.user_table.setItem(row, 1, QtWidgets.QTableWidgetItem(user[1] + " " + user[2]))
+            self.user_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(user[3])))
             row += 1
 
-    # issue and return function
+    # issue page functions
     def UserComboAction(self):
         self.GetUsersData()
         user_name_dict = dict([(str(x[0]), x[1] + " " + x[2]) for x in self.user_list])
@@ -278,24 +288,24 @@ class MainWindow:
             self.issue_page_user_combo_box.addItems(self.users)
         if self.users != self.last_users:
             self.issue_page_book_combo_box.addItems(self.books)
-        self.ui.stackedWidget.setCurrentWidget(self.issue_page)
+        self.ui.stackedWidget.setCurrentWidget(self.ui.issue_page)
 
     def goto_return_page(self):
-        self.ui.stackedWidget.setCurrentWidget(self.return_page)
+        self.ui.stackedWidget.setCurrentWidget(self.ui.return_page)
 
     def goto_book_page(self):
         self.LoadBooksData()
-        self.ui.stackedWidget.setCurrentWidget(self.books_page)
+        self.ui.stackedWidget.setCurrentWidget(self.ui.book_page)
 
     def goto_user_page(self):
         self.LoadUsersData()
-        self.ui.stackedWidget.setCurrentWidget(self.users_page)
+        self.ui.stackedWidget.setCurrentWidget(self.ui.user_page)
 
     def goto_BookStatus_page(self):
-        self.ui.stackedWidget.setCurrentWidget(self.books_status_page)
+        self.ui.stackedWidget.setCurrentWidget(self.ui.book_status_page)
 
     # Issue page elements
-    def goto_mainPage_page(self):
+    def goto_main_page(self):
         self.ui.stackedWidget.setCurrentWidget(self.ui.main_page)
 
     # Books list

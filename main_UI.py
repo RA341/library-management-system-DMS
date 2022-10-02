@@ -310,7 +310,8 @@ class Ui_main_view(object):
         self.delBook_pushButton.setObjectName("delBook_pushButton")
         self.book_tableWidget = QtWidgets.QTableWidget(self.body_frame_4)
         self.book_tableWidget.setGeometry(QtCore.QRect(10, 30, 801, 531))
-        self.book_tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        self.book_tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.book_tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.book_tableWidget.setObjectName("book_tableWidget")
         self.book_tableWidget.setColumnCount(0)
         self.book_tableWidget.setRowCount(0)
@@ -363,7 +364,8 @@ class Ui_main_view(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.user_tableWidget.sizePolicy().hasHeightForWidth())
         self.user_tableWidget.setSizePolicy(sizePolicy)
-        self.user_tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        self.user_tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.user_tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.user_tableWidget.setObjectName("user_tableWidget")
         self.user_tableWidget.setColumnCount(0)
         self.user_tableWidget.setRowCount(0)
@@ -411,7 +413,8 @@ class Ui_main_view(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.bookStatus_tableWidget.sizePolicy().hasHeightForWidth())
         self.bookStatus_tableWidget.setSizePolicy(sizePolicy)
-        self.bookStatus_tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        self.bookStatus_tableWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.bookStatus_tableWidget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.bookStatus_tableWidget.setObjectName("bookStatus_tableWidget")
         self.bookStatus_tableWidget.setColumnCount(0)
         self.bookStatus_tableWidget.setRowCount(0)
@@ -422,7 +425,7 @@ class Ui_main_view(object):
         main_view.setStatusBar(self.statusbar)
 
         self.retranslateUi(main_view)
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(5)
         QtCore.QMetaObject.connectSlotsByName(main_view)
 
     def retranslateUi(self, main_view):

@@ -1,3 +1,4 @@
+import random
 from re import S
 import sys
 from PyQt5.QtCore import QDate
@@ -6,6 +7,8 @@ from PyQt5.QtWidgets import QApplication, QCompleter, QComboBox, QMessageBox
 from PyQt5.QtWidgets import QMainWindow
 from database import mysqlDB
 from main_UI import Ui_main_view
+from user_form import Ui_user_form
+from book_form import Ui_book_form
 
 # ui conversion code
 # pyuic5 -x "I:\School project(dms,sdoop)\library_database_management.ui" -o main_UI.py
@@ -84,10 +87,14 @@ class MainWindow:
         # Book Page
         self.books_page_back_button = self.ui.book_back_Button
         self.book_table = self.ui.book_tableWidget
+        self.book_add_book = self.ui.addBook_pushButton
+        self.book_remove_book = self.ui.delBook_pushButton
 
         # Users page
         self.users_page_back_button = self.ui.user_back_button
         self.user_table = self.ui.user_tableWidget
+        self.user_add_user = self.ui.addUser_pushButton
+        self.user_remove_user = self.ui.delUser_pushButton
 
         # Book Status page
         self.bk_status_back_button = self.ui.book_status_back_button
@@ -120,7 +127,7 @@ class MainWindow:
         # confirm button inits
         self.issue_page_confirm_button.clicked.connect(self.ConfirmIssue)
         self.issue_page_book_combo_box.currentTextChanged.connect(self.IssueComboAction)
-        self.issue_page_user_combo_box.currentTextChanged.connect(self.UserComboAction)
+        self.issue_page_user_combo_box.currentTextChanged.connect(self.IssueComboAction)
         self.issue_page_datedit.setCalendarPopup(True)
         today = QDate().currentDate()
         self.issue_page_datedit.setDate(today)
@@ -134,12 +141,12 @@ class MainWindow:
         self.return_page_back_button.clicked.connect(self.goto_main_page)
 
     def BooksPage(self):
+        self.book_add_book.clicked.connect(self.AddBooks)
+        self.book_remove_book.clicked.connect(self.DelBooks)
         self.books_page_back_button.clicked.connect(self.goto_main_page)
-        self.LoadBooksData()
 
     def UsersPage(self):
         self.users_page_back_button.clicked.connect(self.goto_main_page)
-        self.LoadUsersData()
 
     def BookStatusPage(self):
         self.bk_status_back_button.clicked.connect(self.goto_main_page)
@@ -190,15 +197,16 @@ class MainWindow:
     ###############################################################################################################
     # table data for user and books page
     def LoadBooksData(self):
+        books_column_copy = self.books_column_names.copy()
         # Modifying list
-        del self.books_column_names[3]
-        self.books_column_names[1] = "Book Name"
-        self.books_column_names[2] = "Author Name"
+        del books_column_copy[3]
+        books_column_copy[1] = "Book Name"
+        books_column_copy[2] = "Author Name"
 
         # Adding columns to table
         self.book_table.setRowCount(len(self.books_list))
-        self.book_table.setColumnCount(len(self.books_column_names))
-        self.book_table.setHorizontalHeaderLabels(self.books_column_names)
+        self.book_table.setColumnCount(len(books_column_copy))
+        self.book_table.setHorizontalHeaderLabels(books_column_copy)
         # resizing columns
         header = self.book_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
@@ -216,13 +224,18 @@ class MainWindow:
             row += 1
 
     def LoadUsersData(self):
-        del self.users_column_names[2]
-        self.users_column_names[0] = "User ID"
-        self.users_column_names[1] = "User Name"
+        user_column_copy = self.users_column_names.copy()
+
+        del user_column_copy[2]
+        user_column_copy[0] = "User ID"
+        user_column_copy[1] = "User Name"
+        user_column_copy[2] = "Phone No"
+        # print(self.users_column_names)
+        # print(user_column_copy)
 
         self.user_table.setRowCount(len(self.user_list))
-        self.user_table.setColumnCount(len(self.users_column_names))
-        self.user_table.setHorizontalHeaderLabels(self.users_column_names)
+        self.user_table.setColumnCount(len(user_column_copy))
+        self.user_table.setHorizontalHeaderLabels(user_column_copy)
 
         header = self.user_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
@@ -234,7 +247,7 @@ class MainWindow:
         for user in self.user_list:
             self.user_table.setItem(row, 0, QtWidgets.QTableWidgetItem(str(user[0])))
             self.user_table.setItem(row, 1, QtWidgets.QTableWidgetItem(user[1] + " " + user[2]))
-            self.user_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(user[3])))
+            self.user_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(user[2])))
             row += 1
 
     def LoadIssuedData(self):
@@ -265,26 +278,29 @@ class MainWindow:
 
             row += 1
 
-    ###############################################################################################################
+    def AddBooks(self):
+        self.w = UserForm()
+        self.w.show()
+
+    def DelBooks(self):
+        try:
+            index = self.book_table.currentRow()
+            if index > -1:
+                query = "delete from books where ISBN = %s"
+                data = (self.book_table.item(index, 0).text(),)
+                self.cursor.execute(query, data)
+                self.ShowInfoMessage("Record successfully deleted", "Success", "Record deleted")
+                self.RefreshLists()
+                self.goto_book_page()
+            else:
+                ShowErrorMessage("No item selected", "Item error", "Item not found")
+        except Exception as e:
+            print("del", e)
+
     ###############################################################################################################
 
     ###############################################################################################################
     # issue page functions
-    def UserComboAction(self):
-        try:
-            user_name_dict = dict([(str(x[0]), x[1] + " " + x[2]) for x in self.user_list])
-            user = user_name_dict.get(self.issue_page_user_combo_box.currentText())
-            if user:
-                self.issue_page_user_label.setText(user)
-                self.issue_page_confirm_button.setEnabled(True)
-            else:
-                self.user_flag = 0
-                self.issue_page_user_label.setText("Invalid input")
-                self.issue_page_confirm_button.setEnabled(False)
-
-        except Exception as e:
-            print(e)
-
     def IssueComboAction(self):
         try:
             user_name_dict = dict([(str(x[0]), x[1] + " " + x[2]) for x in self.user_list])
@@ -314,20 +330,9 @@ class MainWindow:
             self.cursor.execute(query, data)
             self.RefreshLists()
             self.goto_issue_page()
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Information)
-            msg.setText("Successful operation")
-            msg.setInformativeText("Record added Successfully")
-            msg.setWindowTitle("Success")
-            msg.exec_()
-
+            ShowInfoMessage("Record successfully added", "Success", "Item added")
         except Exception as e:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Critical)
-            msg.setText("Error")
-            msg.setInformativeText(str(e))
-            msg.setWindowTitle("Error")
-            msg.exec_()
+            ShowErrorMessage(str(e), "Error", "Error")
 
     def SetReturnDate(self):
         self.return_days = self.issue_page_datedit.date().addDays(self.issue_page_return_day_spinbox.value()).toPyDate()
@@ -339,51 +344,135 @@ class MainWindow:
     ###############################################################################################################
     # Page navigation functions
     def goto_issue_page(self):
-
-        books = [str(x[0]) for x in self.allowed_books]
-        users = [str(x[0]) for x in self.user_list]
-        # print("books", self.books)
-        # print(self.last_books)
-
-        self.issue_page_book_combo_box.clear()
-        self.issue_page_user_combo_box.clear()
-
-        self.issue_page_user_combo_box.addItems(users)
-        self.issue_page_book_combo_box.addItems(books)
         try:
+            books = [str(x[0]) for x in self.allowed_books]
+            users = [str(x[0]) for x in self.user_list]
+            # print("books", self.books)
+            # print(self.last_books)
+
+            self.issue_page_book_combo_box.clear()
+            self.issue_page_user_combo_box.clear()
+
+            self.issue_page_user_combo_box.addItems(users)
+            self.issue_page_book_combo_box.addItems(books)
+
             if self.issue_page_book_combo_box.currentIndex() < 0:
                 self.issue_page_confirm_button.setEnabled(False)
             else:
                 self.issue_page_confirm_button.setEnabled(True)
+
+            self.ui.stackedWidget.setCurrentWidget(self.ui.issue_page)
         except Exception as e:
             print(e)
-        self.ui.stackedWidget.setCurrentWidget(self.ui.issue_page)
 
     def goto_return_page(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.return_page)
+        try:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.return_page)
+        except Exception as e:
+            print(e)
 
     def goto_book_page(self):
-        self.LoadBooksData()
-        self.ui.stackedWidget.setCurrentWidget(self.ui.book_page)
+        try:
+            self.LoadBooksData()
+            self.ui.stackedWidget.setCurrentWidget(self.ui.book_page)
+        except Exception as e:
+            print(e)
 
     def goto_user_page(self):
-        self.LoadUsersData()
-        self.ui.stackedWidget.setCurrentWidget(self.ui.user_page)
+        try:
+            self.LoadUsersData()
+            self.ui.stackedWidget.setCurrentWidget(self.ui.user_page)
+        except Exception as e:
+            print(e)
 
     def goto_BookStatus_page(self):
-        self.LoadIssuedData()
-        self.ui.stackedWidget.setCurrentWidget(self.ui.book_status_page)
+        try:
+            self.LoadIssuedData()
+            self.ui.stackedWidget.setCurrentWidget(self.ui.book_status_page)
+        except Exception as e:
+            print(e)
 
     # Issue page elements
     def goto_main_page(self):
-        self.ui.stackedWidget.setCurrentWidget(self.ui.main_page)
+        try:
+            self.ui.stackedWidget.setCurrentWidget(self.ui.main_page)
+        except Exception as e:
+            print(e)
+
     ###############################################################################################################
+    # message box functions
+
+
+def ShowErrorMessage(message, win_title, title):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Critical)
+    msg.setWindowTitle(win_title)
+    msg.setText(title)
+    msg.setInformativeText(message)
+    msg.exec_()
+
+
+def ShowInfoMessage(message, win_title, title):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Information)
+    msg.setWindowTitle(win_title)
+    msg.setText(title)
+    msg.setInformativeText(message)
+    msg.exec_()
+
+
+class UserForm(MainWindow):
+    def __init__(self):
+        # Initializing main app window
+        super().__init__()
+        self.main_win = QMainWindow()
+        self.main_win.setFixedSize(700, 500)
+
+        # Adding ui file
+        self.ui = Ui_user_form()
+        self.ui.setupUi(self.main_win)
+
+        # conncecting buttons
+        self.ui.user_form_confirm.clicked.connect(self.submit_user_info)
+        self.ui.user_form_cancel.clicked.connect(lambda _: self.main_win.close())
+
+    def submit_user_info(self):
+        try:
+            uid = self.gen_uid()
+            while uid in [x[0] for x in self.user_list]:
+                uid = self.gen_uid()
+            fname = self.ui.user_fname_input.text()
+            lname = self.ui.user_lname_input.text()
+            phone = self.ui.user_phone.text()
+
+            if len(fname) <= 1 or len(lname) <= 1:
+                ShowErrorMessage("Name cannot be empty", "Name Error", "Invalid Name")
+            elif len(phone) != 10 and type(phone) != int:
+                ShowErrorMessage("Enter a valid phone number", "Phone Number Error",
+                                 "Invalid Phone Number")
+            else:
+                data = (uid, fname, lname, phone)
+                query = "insert into users values (%s,%s,%s,%s)"
+                self.cursor.execute(query, data)
+                ShowInfoMessage("Record added successfully", "Success", "Record Added")
+                self.main_win.close()
+        except Exception as e:
+            print(e)
+
+    def show(self):
+        self.main_win.show()
+
+    def gen_uid(self):
+        return random.randrange(1000000000, 9999999999)
 
 
 ###############################################################################################################
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    main_win = MainWindow()
-    main_win.showUI()
-    sys.exit(app.exec_())
+    try:
+        app = QApplication(sys.argv)
+        main_win = MainWindow()
+        main_win.showUI()
+        sys.exit(app.exec_())
+    except Exception as e:
+        print(e)

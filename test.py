@@ -1,18 +1,7 @@
-from logging import exception
-from operator import le
-import sys
-from PyQt5.QtGui import QDoubleValidator, QIntValidator, QValidator
-from PyQt5.QtCore import QDate
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QCompleter, QComboBox
-from PyQt5.QtWidgets import QMainWindow
-from matplotlib.backend_bases import cursors
-from matplotlib.style import use
-from database import mysqlDB
-from main_UI import Ui_main_view
+# [y for y in self.books_list if y[0] not in self.issued_list[0]]
 
-cursor = mysqlDB()
+y = [(4, 2)]
 
-l = [1,2,3,4]
+z = [(1, 2), (4, 5)]
 
-print(1 not in l)
+print([t for t in z if t[0] not in y[0]])

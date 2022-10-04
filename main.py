@@ -336,14 +336,13 @@ class MainWindow:
     # issue page functions
     def IssueComboAction(self):
         try:
+            user = self.user_name_dict.get(self.issue_page_user_combo_box.currentText())
 
-            user = self.user_name_dict.get(self.issue_page_user_combo_box.currentText())[0]
-
-            book = self.book_name_dict.get(self.issue_page_book_combo_box.currentText())[1]
+            book = self.book_name_dict.get(self.issue_page_book_combo_box.currentText())
             # print("user", user)
             # print("booooks", book)
             if book:
-                self.issue_page_book_label.setText(book)
+                self.issue_page_book_label.setText(book[1])
             else:
                 if len(self.allowed_books) == 0:
                     self.issue_page_book_label.setText("All books Issued")
@@ -351,7 +350,7 @@ class MainWindow:
                     self.issue_page_book_label.setText("Invalid input")
 
             if user:
-                self.issue_page_user_label.setText(user)
+                self.issue_page_user_label.setText(user[0])
             else:
                 self.issue_page_user_label.setText("Invalid input")
 

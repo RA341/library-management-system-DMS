@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'I:\School project(dms,sdoop)\library_database_management.ui'
+# Form implementation generated from reading ui file 'I:\School project(dms,sdoop)\dms\library_database_management.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -305,6 +305,7 @@ class Ui_main_view(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.return_return_date.setFont(font)
+        self.return_return_date.setText("")
         self.return_return_date.setObjectName("return_return_date")
         self.label_13 = QtWidgets.QLabel(self.body_frame_3)
         self.label_13.setGeometry(QtCore.QRect(710, 150, 101, 41))
@@ -317,6 +318,7 @@ class Ui_main_view(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.issue_date.setFont(font)
+        self.issue_date.setText("")
         self.issue_date.setObjectName("issue_date")
         self.label_15 = QtWidgets.QLabel(self.body_frame_3)
         self.label_15.setGeometry(QtCore.QRect(430, 160, 101, 41))
@@ -339,6 +341,7 @@ class Ui_main_view(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_17.setFont(font)
+        self.label_17.setText("")
         self.label_17.setObjectName("label_17")
         self.label_18 = QtWidgets.QLabel(self.body_frame_3)
         self.label_18.setGeometry(QtCore.QRect(264, 315, 101, 41))
@@ -369,6 +372,7 @@ class Ui_main_view(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_22.setFont(font)
+        self.label_22.setText("")
         self.label_22.setObjectName("label_22")
         self.stackedWidget.addWidget(self.return_page)
         self.book_page = QtWidgets.QWidget()
@@ -525,7 +529,7 @@ class Ui_main_view(object):
         main_view.setStatusBar(self.statusbar)
 
         self.retranslateUi(main_view)
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(main_view)
 
     def retranslateUi(self, main_view):
@@ -554,17 +558,13 @@ class Ui_main_view(object):
         self.label_9.setText(_translate("main_view", "Member Name"))
         self.return_user.setText(_translate("main_view", "TextLabel"))
         self.label_11.setText(_translate("main_view", "Return Date"))
-        self.return_return_date.setText(_translate("main_view", "lbel"))
         self.label_13.setText(_translate("main_view", "Issue Date"))
-        self.issue_date.setText(_translate("main_view", "TextLabel"))
         self.label_15.setText(_translate("main_view", "Book Name"))
         self.return_book.setText(_translate("main_view", "TextLabel"))
-        self.label_17.setText(_translate("main_view", "label"))
         self.label_18.setText(_translate("main_view", "Days Late"))
         self.label_19.setText(_translate("main_view", "Rate"))
         self.label_20.setText(_translate("main_view", "100/day"))
         self.label_21.setText(_translate("main_view", "Total Fine"))
-        self.label_22.setText(_translate("main_view", "label"))
         self.title_label_5.setText(_translate("main_view", "Book database"))
         self.book_back_Button.setText(_translate("main_view", "Back"))
         self.addBook_pushButton.setText(_translate("main_view", "Add Book"))

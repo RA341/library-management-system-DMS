@@ -82,6 +82,16 @@ class MainWindow:
         self.issue_page_confirm_button = self.ui.confirm_issue_pushButton
 
         # Return Page
+        # Info Labels
+        self.return_name = self.ui.return_user
+        self.return_book = self.ui.return_book
+        self.return_issue_date = self.ui.issue_date
+        self.return_return_date = self.ui.return_return_date
+        self.return_days_late = self.ui.label_17
+        self.return_total_fine = self.ui.label_22
+
+        self.return_combo_box = self.ui.recipt_comboBox
+        self.confirm_return = self.ui.confirm_return_pushButton
         self.return_page_back_button = self.ui.return_back_button
 
         # Book Page
@@ -138,6 +148,13 @@ class MainWindow:
             str(self.return_days.day) + "-" + str(self.return_days.month) + "-" + str(self.return_days.year))
 
     def ReturnPage(self):
+        self.return_combo_box.activated.connect(self.ReturnComboBox)
+
+        # setting properties for book combobox
+        self.return_combo_box.setEditable(True)
+        self.return_combo_box.completer().setCompletionMode(QCompleter.PopupCompletion)
+        self.return_combo_box.setInsertPolicy(QComboBox.NoInsert)
+
         self.return_page_back_button.clicked.connect(self.goto_main_page)
 
     def BooksPage(self):
@@ -164,6 +181,7 @@ class MainWindow:
     def GetBooksData(self):
         self.cursor.execute("select * from getbooks")
         self.books_list = [x for x in self.cursor.fetchall()]
+        self.book_name_dict = dict([(str(x[0]), [x[1], x[2]]) for x in self.books_list])
 
     def GetUserColumns(self):
         self.cursor.execute("show columns from getusers")
@@ -172,6 +190,7 @@ class MainWindow:
     def GetUsersData(self):
         self.cursor.execute("select * from getusers")
         self.user_list = [x for x in self.cursor.fetchall()]
+        self.user_name_dict = dict([(str(x[0]), [x[1], x[2]]) for x in self.user_list])
 
     def GetIssuedColumns(self):
         self.cursor.execute("show columns from getissued")
@@ -180,6 +199,7 @@ class MainWindow:
     def GetIssuedData(self):
         self.cursor.execute("select * from getissued")
         self.issued_list = [x for x in self.cursor.fetchall()]
+        self.issue_dict = dict([(str(x[0]), [x[1], x[2], x[3]]) for x in self.issued_list])
 
     def GetAllowedBooks(self):
         self.allowed_books = [y for y in self.books_list if y[0] not in [x[0] for x in self.issued_list]]
@@ -188,7 +208,7 @@ class MainWindow:
         # print("issue",self.issued_list)
 
     def RefreshLists(self):
-        print("executing refresh")
+        # print("executing refresh")
         self.GetUsersData()
         self.GetBooksData()
         self.GetIssuedData()
@@ -232,7 +252,7 @@ class MainWindow:
         row = 0
 
         for user in self.user_list:
-            print(user)
+            # print(user)
             self.user_table.setItem(row, 0, QtWidgets.QTableWidgetItem(str(user[0])))
             self.user_table.setItem(row, 1, QtWidgets.QTableWidgetItem(user[1]))
             self.user_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(user[2])))
@@ -310,12 +330,12 @@ class MainWindow:
     # issue page functions
     def IssueComboAction(self):
         try:
-            user_name_dict = dict([(str(x[0]), x[1] + " " + x[2]) for x in self.user_list])
-            user = user_name_dict.get(self.issue_page_user_combo_box.currentText())
 
-            book_name_dict = dict([(str(x[0]), x[1]) for x in self.books_list])
-            book = book_name_dict.get(self.issue_page_book_combo_box.currentText())
+            user = self.user_name_dict.get(self.issue_page_user_combo_box.currentText())[1]
 
+            book = self.book_name_dict.get(self.issue_page_book_combo_box.currentText())[1]
+            print("user", user)
+            print("booooks", book)
             if book:
                 self.issue_page_book_label.setText(book)
             else:
@@ -364,6 +384,33 @@ class MainWindow:
     ###############################################################################################################
 
     ###############################################################################################################
+    # Return Page functions
+
+    def ReturnComboBox(self):
+
+        data = self.issue_dict.get(
+            self.return_combo_box.currentText())  # [29227629, datetime.date(2022, 10, 3), datetime.date(2022, 10, 13)]
+        # print(data)
+        # print(self.user_name_dict)
+        # print(self.book_name_dict)
+
+        if data:
+            try:
+                print(type(data[2] - data[1]))
+                self.return_name.setText(self.user_name_dict[str(data[0])][0])
+                self.return_book.setText(self.book_name_dict[str(self.return_combo_box.currentText())][1])
+                self.return_issue_date.setText(str(data[1].day) + "-" + str(data[1].month) + "-" + str(data[1].year))
+                self.return_return_date.setText(str(data[2].day) + "-" + str(data[2].month) + "-" + str(data[2].year))
+                # self.return_days_late.setText(data[2] - data[1])
+            except Exception as e:
+                print(e)
+
+        else:
+            self.return_name.setText("Invalid selection")
+
+    ###############################################################################################################
+
+    ###############################################################################################################
     # Page navigation functions
     def goto_issue_page(self):
         try:
@@ -389,6 +436,8 @@ class MainWindow:
 
     def goto_return_page(self):
         try:
+            issued = [str(x[0]) for x in self.issued_list]
+            self.return_combo_box.addItems(issued)
             self.ui.stackedWidget.setCurrentWidget(self.ui.return_page)
         except Exception as e:
             print(e)
@@ -485,6 +534,7 @@ class UserForm(QDialog):
 
         except Exception as e:
             print(e)
+
 
 class BookForm(QDialog):
     def __init__(self, parent=None, book_list=None, cursor=None):

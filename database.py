@@ -56,7 +56,7 @@ class mysqlDB:
                 PRIMARY KEY (ISBN));")
 
         self.dbcursor.execute("create table IF NOT EXISTS users(\
-                    UID int,\
+                    UID BIGINT(10),\
                     FName varchar(30),\
                     LName varchar(30),\
                     phoneNo varchar(30),\
@@ -64,7 +64,7 @@ class mysqlDB:
 
         self.dbcursor.execute("create table IF NOT EXISTS issued(\
                     ISBN BIGINT(13),\
-                    UID int,\
+                    UID BIGINT(10),\
                     issue_date date,\
                     return_date date,\
                     PRIMARY KEY (ISBN),\
@@ -119,24 +119,6 @@ class mysqlDB:
                 END")
 
         print("Functions Created Successfully")
-
-
-    # def CreateProcedures(self):
-    #     try:
-    #         pass
-    #         # calculate days late
-    #         # self.dbcursor.execute(
-    #         #     "CREATE PROCEDURE IF NOT EXISTS getdayslate (in returndate date,in currentdate date,out days int) BEGIN IF (currentdate > returndate) THEN\
-    #         #     set days = datediff(currentdate,returndate);\
-    #         #     ELSE\
-    #         #     set days = 0;\
-    #         #     END IF; END ")
-    #
-    #     except Exception as e:
-    #         print(e)
-
-    # def getdayslate(self, issue_date, current_date):
-    #     return r.dbcursor.callproc('getdayslate', (issue_date, current_date, "0"))[2]
 
     def __init__(self):
         try:

@@ -33,8 +33,6 @@ class MainWindow:
         self.sql = mysqlDB()
         self.cursor = self.sql.dbcursor
 
-        # Initializing UI
-        self.ui_elements()
         # Setting Main Page
         self.ui.stackedWidget.setCurrentWidget(self.ui.main_page)
 
@@ -59,10 +57,9 @@ class MainWindow:
         self.BookStatusPage()
 
     ###############################################################################################################
-    def showUI(self):
-        self.main_win.show()
 
-    def ui_elements(self):
+    ###############################################################################################################
+    def MainPage(self):
         # Home Page
         self.issue_button = self.ui.issue_button
         self.return_button = self.ui.return_button
@@ -70,6 +67,13 @@ class MainWindow:
         self.users_button = self.ui.user_button
         self.bk_status_button = self.ui.book_status_button
 
+        self.issue_button.clicked.connect(self.goto_issue_page)
+        self.return_button.clicked.connect(self.goto_return_page)
+        self.books_button.clicked.connect(self.goto_book_page)
+        self.users_button.clicked.connect(self.goto_user_page)
+        self.bk_status_button.clicked.connect(self.goto_BookStatus_page)
+
+    def IssuePage(self):
         # Issue Page
         self.issue_page_back_button = self.ui.issue_back_button
         self.issue_page_user_combo_box = self.ui.issue_user_comboBox
@@ -81,44 +85,6 @@ class MainWindow:
         self.issue_page_return_date_label = self.ui.return_date_label
         self.issue_page_confirm_button = self.ui.confirm_issue_pushButton
 
-        # Return Page
-        # Info Labels
-        self.return_name = self.ui.return_user
-        self.return_book = self.ui.return_book
-        self.return_issue_date = self.ui.issue_date
-        self.return_return_date = self.ui.return_return_date
-        self.return_days_late = self.ui.label_17
-        self.return_total_fine = self.ui.label_22
-
-        self.return_combo_box = self.ui.recipt_comboBox
-        self.confirm_return = self.ui.confirm_return_pushButton
-        self.return_page_back_button = self.ui.return_back_button
-
-        # Book Page
-        self.books_page_back_button = self.ui.book_back_Button
-        self.book_table = self.ui.book_tableWidget
-        self.book_add_book = self.ui.addBook_pushButton
-        self.book_remove_book = self.ui.delBook_pushButton
-
-        # Users page
-        self.users_page_back_button = self.ui.user_back_button
-        self.user_table = self.ui.user_tableWidget
-        self.user_add_user = self.ui.addUser_pushButton
-        self.user_remove_user = self.ui.delUser_pushButton
-
-        # Book Status page
-        self.bk_status_back_button = self.ui.book_status_back_button
-        self.bk_issued_table = self.ui.bookStatus_tableWidget
-
-    ###############################################################################################################
-    def MainPage(self):
-        self.issue_button.clicked.connect(self.goto_issue_page)
-        self.return_button.clicked.connect(self.goto_return_page)
-        self.books_button.clicked.connect(self.goto_book_page)
-        self.users_button.clicked.connect(self.goto_user_page)
-        self.bk_status_button.clicked.connect(self.goto_BookStatus_page)
-
-    def IssuePage(self):
         self.issue_page_back_button.clicked.connect(self.goto_main_page)
         # combobox on change functions
         self.issue_page_book_combo_box.activated.connect(self.IssueComboAction)
@@ -142,33 +108,72 @@ class MainWindow:
         self.today = QDate().currentDate()
         self.issue_page_datedit.setDate(self.today)
 
+        self.issue_page_datedit.dateChanged.connect(self.SetReturnDate)
         self.issue_page_return_day_spinbox.textChanged.connect(self.SetReturnDate)
         self.return_days = self.issue_page_datedit.date().addDays(self.issue_page_return_day_spinbox.value()).toPyDate()
         self.issue_page_return_date_label.setText(
             str(self.return_days.day) + "-" + str(self.return_days.month) + "-" + str(self.return_days.year))
 
     def ReturnPage(self):
-        self.return_combo_box.activated.connect(self.ReturnComboBox)
+        # Return Page
+        # Info Labels
+        self.return_name = self.ui.return_user
+        self.return_book = self.ui.return_book
+        self.return_issue_date = self.ui.issue_date
+        self.return_return_date = self.ui.return_return_date
+        self.return_days_late = self.ui.label_17
+        self.return_total_fine = self.ui.label_22
 
+        self.return_combo_box = self.ui.recipt_comboBox
+        self.confirm_return = self.ui.confirm_return_pushButton
+        self.return_page_back_button = self.ui.return_back_button
+
+        # self.return_combo_box.activated.connect(self.ReturnComboBox)
+        self.return_combo_box.currentTextChanged.connect(self.ReturnComboBox)
         # setting properties for book combobox
         self.return_combo_box.setEditable(True)
         self.return_combo_box.completer().setCompletionMode(QCompleter.PopupCompletion)
         self.return_combo_box.setInsertPolicy(QComboBox.NoInsert)
-
+        self.confirm_return.clicked.connect(self.ConfirmReturn)
         self.return_page_back_button.clicked.connect(self.goto_main_page)
 
     def BooksPage(self):
+        # Book Page
+        self.books_page_back_button = self.ui.book_back_Button
+
+        self.book_table = self.ui.book_tableWidget
+        self.book_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+
+        self.book_add_book = self.ui.addBook_pushButton
+        self.book_remove_book = self.ui.delBook_pushButton
+
         self.book_add_book.clicked.connect(self.AddBooks)
         self.book_remove_book.clicked.connect(self.DelBooks)
         self.books_page_back_button.clicked.connect(self.goto_main_page)
 
     def UsersPage(self):
+        # Users page
+        self.users_page_back_button = self.ui.user_back_button
+
+        self.user_table = self.ui.user_tableWidget
+        self.user_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+
+        self.user_add_user = self.ui.addUser_pushButton
+        self.user_remove_user = self.ui.delUser_pushButton
+
         self.user_add_user.clicked.connect(self.AddUsers)
         self.user_remove_user.clicked.connect(self.DelUsers)
         self.users_page_back_button.clicked.connect(self.goto_main_page)
 
     def BookStatusPage(self):
+        # Book Status page
+        self.bk_status_back_button = self.ui.book_status_back_button
         self.bk_status_back_button.clicked.connect(self.goto_main_page)
+
+        self.bk_issued_table = self.ui.bookStatus_tableWidget
+        # self.bk_issued_table.sele
+        self.bk_issued_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+
 
     ###############################################################################################################
 
@@ -199,13 +204,10 @@ class MainWindow:
     def GetIssuedData(self):
         self.cursor.execute("select * from getissued")
         self.issued_list = [x for x in self.cursor.fetchall()]
-        self.issue_dict = dict([(str(x[0]), [x[1], x[2], x[3]]) for x in self.issued_list])
+        self.issue_dict = dict([(str(x[0]), [x[1], x[2], x[3], x[4], x[5]]) for x in self.issued_list])
 
     def GetAllowedBooks(self):
         self.allowed_books = [y for y in self.books_list if y[0] not in [x[0] for x in self.issued_list]]
-        # print("allowed", self.allowed_books)
-        # print("book",self.books_list)
-        # print("issue",self.issued_list)
 
     def RefreshLists(self):
         # print("executing refresh")
@@ -270,6 +272,8 @@ class MainWindow:
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
+        header.setSectionResizeMode(5, QtWidgets.QHeaderView.Stretch)
 
         # adding data into tables
         row = 0
@@ -279,6 +283,8 @@ class MainWindow:
             self.bk_issued_table.setItem(row, 1, QtWidgets.QTableWidgetItem(str(book[1])))
             self.bk_issued_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(book[2])))
             self.bk_issued_table.setItem(row, 3, QtWidgets.QTableWidgetItem(str(book[3])))
+            self.bk_issued_table.setItem(row, 4, QtWidgets.QTableWidgetItem(str(book[4])))
+            self.bk_issued_table.setItem(row, 5, QtWidgets.QTableWidgetItem(str(book[5])))
 
             row += 1
 
@@ -331,11 +337,11 @@ class MainWindow:
     def IssueComboAction(self):
         try:
 
-            user = self.user_name_dict.get(self.issue_page_user_combo_box.currentText())[1]
+            user = self.user_name_dict.get(self.issue_page_user_combo_box.currentText())[0]
 
             book = self.book_name_dict.get(self.issue_page_book_combo_box.currentText())[1]
-            print("user", user)
-            print("booooks", book)
+            # print("user", user)
+            # print("booooks", book)
             if book:
                 self.issue_page_book_label.setText(book)
             else:
@@ -366,12 +372,15 @@ class MainWindow:
             self.cursor.execute(query, data)
             self.RefreshLists()
             self.goto_issue_page()
-            ShowInfoMessage("Record successfully added", "Success", "Item added")
+            ShowInfoMessage("Book issued successfully", "Success", "Item added")
 
             self.issue_page_book_combo_box.setCurrentIndex(0)
+
             self.issue_page_user_combo_box.setCurrentIndex(0)
             self.issue_page_datedit.setDate(self.today)
             self.issue_page_return_day_spinbox.cleanText()
+
+
 
         except Exception as e:
             ShowErrorMessage(str(e), "Error", "Error")
@@ -396,17 +405,40 @@ class MainWindow:
 
         if data:
             try:
-                print(type(data[2] - data[1]))
                 self.return_name.setText(self.user_name_dict[str(data[0])][0])
                 self.return_book.setText(self.book_name_dict[str(self.return_combo_box.currentText())][1])
                 self.return_issue_date.setText(str(data[1].day) + "-" + str(data[1].month) + "-" + str(data[1].year))
                 self.return_return_date.setText(str(data[2].day) + "-" + str(data[2].month) + "-" + str(data[2].year))
-                # self.return_days_late.setText(data[2] - data[1])
+                self.return_days_late.setText(str(data[3]))
+                self.return_total_fine.setText(str(data[4]))
             except Exception as e:
                 print(e)
 
         else:
             self.return_name.setText("Invalid selection")
+
+    def ConfirmReturn(self):
+        try:
+            isbn = self.return_combo_box.currentText()  # [29227629, datetime.date(2022, 10, 3), datetime.date(2022, 10, 13)]
+
+            if isbn:
+                query = "delete from issued where ISBN = %s"
+                data = (isbn,)
+                self.cursor.execute(query, data)
+                ShowInfoMessage("Book returned successfully", "Success", "Record deleted")
+                self.RefreshLists()
+                self.return_name.setText("")
+                self.return_book.setText("")
+                self.return_issue_date.setText("")
+                self.return_return_date.setText("")
+                self.return_days_late.setText("")
+                self.return_total_fine.setText("")
+
+                self.goto_return_page()
+            else:
+                ShowErrorMessage("No item selected", "Item error", "Item not found")
+        except Exception as e:
+            print(e)
 
     ###############################################################################################################
 
@@ -416,8 +448,6 @@ class MainWindow:
         try:
             books = [str(x[0]) for x in self.allowed_books]
             users = [str(x[0]) for x in self.user_list]
-            # print("books", self.books)
-            # print(self.last_books)
 
             self.issue_page_book_combo_box.clear()
             self.issue_page_user_combo_box.clear()
@@ -432,11 +462,13 @@ class MainWindow:
 
             self.ui.stackedWidget.setCurrentWidget(self.ui.issue_page)
         except Exception as e:
-            print(e)
+            print("Goto Issue Exceptions", e)
 
     def goto_return_page(self):
         try:
             issued = [str(x[0]) for x in self.issued_list]
+
+            self.return_combo_box.clear()
             self.return_combo_box.addItems(issued)
             self.ui.stackedWidget.setCurrentWidget(self.ui.return_page)
         except Exception as e:
@@ -513,9 +545,9 @@ class UserForm(QDialog):
 
     def submit_user_info(self):
         try:
-            uid = random.randrange(10000000, 99999999)
+            uid = random.randrange(1000000000, 9999999999)
             while uid in [x[0] for x in self.user_list]:
-                uid = random.randrange(10000000, 99999999)
+                uid = random.randrange(1000000000, 9999999999)
             fname = self.ui.user_fname_input.text()
             lname = self.ui.user_lname_input.text()
             phone = self.ui.user_phone.text()
@@ -584,7 +616,7 @@ if __name__ == '__main__':
     try:
         app = QApplication(sys.argv)
         main_win = MainWindow()
-        main_win.showUI()
+        main_win.main_win.show()
         sys.exit(app.exec_())
     except Exception as e:
         print(e)

@@ -302,7 +302,6 @@ class MainWindow:
         try:
             index = self.book_table.currentRow()
             if index > -1:
-                query = "delete from books where ISBN = %s"
                 data = (self.book_table.item(index, 0).text(),)
                 self.cursor.callproc('delbooks', data)
                 showInfoMessage("Record successfully deleted", "Success", "Record deleted")
@@ -323,7 +322,6 @@ class MainWindow:
         try:
             index = self.user_table.currentRow()
             if index > -1:
-                query = "delete from users where UID = %s"
                 data = (self.user_table.item(index, 0).text(),)
                 self.cursor.callproc('deluser', data)
                 showInfoMessage("Record successfully deleted", "Success", "Record deleted")
@@ -369,7 +367,6 @@ class MainWindow:
         bookID = self.issue_page_book_combo_box.currentText()
         userID = self.issue_page_user_combo_box.currentText()
         issue = str(self.issue_page_datedit.date().toPyDate())
-        query = "insert into issued values (%s,%s,%s,%s)"
         data = (bookID, userID, issue, self.return_date)
         try:
             self.cursor.callproc('addissuebook', data)
@@ -382,8 +379,6 @@ class MainWindow:
             self.issue_page_user_combo_box.setCurrentIndex(0)
             self.issue_page_datedit.setDate(self.today)
             self.issue_page_return_day_spinbox.cleanText()
-
-
 
         except Exception as e:
             showErrorMessage(str(e), "Error", "Error")
@@ -422,7 +417,8 @@ class MainWindow:
 
     def confirmReturn(self):
         try:
-            isbn = self.return_combo_box.currentText()  # [29227629, datetime.date(2022, 10, 3), datetime.date(2022, 10, 13)]
+            isbn = self.return_combo_box.currentText()
+            # [29227629, datetime.date(2022, 10, 3), datetime.date(2022, 10, 13)]
 
             if isbn:
                 # query = "delete from issued where ISBN = %s"
@@ -541,7 +537,7 @@ class UserForm(QDialog):
         self.cursor = cursor
 
         # connecting buttons
-        self.ui.user_form_confirm.clicked.connect(self.submit_user_info)
+        self.ui.user_form_confirm.clicked.connect(self.submitUserInfo)
         self.ui.user_form_cancel.clicked.connect(lambda _: self.close())
 
     def submitUserInfo(self):
@@ -582,7 +578,7 @@ class BookForm(QDialog):
         self.cursor = cursor
 
         # connecting buttons
-        self.ui.book_form_confirm.clicked.connect(self.submit_book_info)
+        self.ui.book_form_confirm.clicked.connect(self.submitBookInfo)
         self.ui.book_form_cancel.clicked.connect(lambda _: self.close())
 
     def submitBookInfo(self):

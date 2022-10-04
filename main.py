@@ -173,40 +173,40 @@ class MainWindow:
 
     ###############################################################################################################
     # User and book lists function
-    def getstoredproceduredata(self):
+    def getStoredProcedureData(self):
         for result in self.cursor.stored_results():
             return result.fetchall()
 
     def getBookColumns(self):
         self.cursor.callproc('getbookcolumnlist')
-        tmp = self.getstoredproceduredata()
+        tmp = self.getStoredProcedureData()
         self.books_column_names = [x[0] for x in tmp]
 
     def getBooksData(self):
         self.cursor.callproc("getbooklist")
-        tmp = self.getstoredproceduredata()
+        tmp = self.getStoredProcedureData()
         self.books_list = [x for x in tmp]
         self.book_name_dict = dict([(str(x[0]), [x[1], x[2]]) for x in self.books_list])
 
     def getUserColumns(self):
         self.cursor.callproc('getusercolumnlist')
-        tmp = self.getstoredproceduredata()
+        tmp = self.getStoredProcedureData()
         self.users_column_names = [x[0] for x in tmp]
 
     def getUsersData(self):
         self.cursor.callproc("getuserlist")
-        tmp = self.getstoredproceduredata()
+        tmp = self.getStoredProcedureData()
         self.user_list = [x for x in tmp]
         self.user_name_dict = dict([(str(x[0]), [x[1], x[2]]) for x in self.user_list])
 
     def getIssuedColumns(self):
         self.cursor.callproc("getissuedcolumnlist")
-        tmp = self.getstoredproceduredata()
+        tmp = self.getStoredProcedureData()
         self.issued_column_names = [x[0] for x in tmp]
 
     def getIssuedData(self):
         self.cursor.callproc("getissuedlist")
-        tmp = self.getstoredproceduredata()
+        tmp = self.getStoredProcedureData()
         self.issued_list = [x for x in tmp]
         self.issue_dict = dict([(str(x[0]), [x[1], x[2], x[3], x[4], x[5]]) for x in self.issued_list])
 

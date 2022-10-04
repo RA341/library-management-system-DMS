@@ -95,7 +95,7 @@ class mysqlDB:
                     issue_date as 'Issue Date',\
                     return_date as 'Return Date',\
                     days(return_date) as 'Days Late',\
-                    calculate_fines(days(return_date),100) as 'Total Fines'\
+                    calculate_fines(days(return_date),100) as 'Total Fine'\
                     FROM  issued;")
 
         print("Views Created Successfully")
@@ -104,6 +104,7 @@ class mysqlDB:
         self.dbcursor.execute("CREATE FUNCTION IF NOT EXISTS\
                         days(issue date) RETURNS int DETERMINISTIC\
                            BEGIN DECLARE currentdate DATE;\
+                            Select current_date() into currentdate;\
                                IF (currentdate > issue) THEN\
                                     RETURN datediff(currentdate,issue);\
                                ELSE\
@@ -120,6 +121,80 @@ class mysqlDB:
 
         print("Functions Created Successfully")
 
+    def CreateStoredProcedures(self):
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                getbookcolumnlist()\
+        	                     BEGIN\
+                                    show columns from getbooks;\
+        	                     END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                getbooklist()\
+                	                BEGIN\
+                                     select * from getbooks;\
+                	                END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                        getusercolumnlist()\
+                	                     BEGIN\
+                                            show columns from getusers;\
+                	                     END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                        getuserlist()\
+                	                     BEGIN\
+                                            select * from getusers;\
+                	                     END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                        getissuedcolumnlist()\
+                	                     BEGIN\
+                                            show columns from getissued;\
+                	                     END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                        getissuedlist()\
+                	                     BEGIN\
+                                            select * from getissued;\
+                	                     END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                delbooks (in bookid bigint)\
+	                             BEGIN\
+                                  delete from book where ISBN = bookid;\
+	                             END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                deluser (in userid bigint)\
+        	                     BEGIN\
+                                    delete from users where UID = userid;\
+        	                     END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                delissued (in bookid bigint)\
+        	                        BEGIN\
+                                        delete from issued where ISBN = bookid;\
+        	                        END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                addissuebook (in bookID bigint, in userID bigint, in issuedate date, in returndate date)\
+                	                BEGIN\
+                                        insert into issued values (bookID, userID, issuedate, returndate);\
+                	                END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                 adduser (in uid bigint, in fname varchar(30), in lname varchar(30), in phone varchar(30))\
+                        	        BEGIN\
+                                        insert into users values (uid, fname, lname, phone);\
+                        	        END")
+
+        self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                 addbook (in bid bigint, in book_name varchar(30), in fname varchar(30), in lname varchar(30))\
+                                	BEGIN\
+                                        insert into books values (bid, book_name, fname, lname);\
+                                	END")
+        print("Stored Procedures created Successfully")
+
     def __init__(self):
         try:
             self.ConnectToMysql()
@@ -127,16 +202,16 @@ class mysqlDB:
             self.CreateFunctions()
             self.CreateTables()
             self.CreateViews()
+            self.CreateStoredProcedures()
         except Exception as e:
             print(e)
 
 if __name__ == "__main__":
     r = mysqlDB()
-
+    def getstoredproceduredata():
+        for result in r.dbcursor.stored_results():
+            return result.fetchall()
     try:
-        # r.dbcursor.execute("select * from getissued")
-        # print(r.dbcursor.fetchall())
-        # # r.dbcursor.callproc('getdayslate', ('2022-11-02', '2022-11-03', "0"))[2]
-        pass
+         pass
     except Exception as e:
         print(e)

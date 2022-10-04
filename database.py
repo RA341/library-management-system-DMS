@@ -2,7 +2,7 @@ import mysql.connector
 
 
 class MySqlDB:
-    def ConnectToMysql(self):
+    def connectToMysql(self):
         try:
             self.db = mysql.connector.connect(
                 host="localhost",
@@ -18,7 +18,7 @@ class MySqlDB:
             print(e)
             quit(-1)
 
-    def ConnectToDatabase(self, dbname):
+    def connectToDatabase(self, dbname):
         try:
             self.dbcursor.execute("create database if not exists " + dbname)
 
@@ -40,7 +40,7 @@ class MySqlDB:
             print(e)
             quit(-1)
 
-    def CreateTables(self):
+    def createTables(self):
         self.dbcursor.execute("create table IF NOT EXISTS books(\
                 ISBN BIGINT(13),\
                 Book_Name varchar(30),\
@@ -66,7 +66,7 @@ class MySqlDB:
 
         print("Tables created Successfully")
 
-    def CreateViews(self):
+    def createViews(self):
         self.dbcursor.execute(
             "create or replace VIEW getusers AS \
             SELECT  UID,\
@@ -93,7 +93,7 @@ class MySqlDB:
 
         print("Views Created Successfully")
 
-    def CreateFunctions(self):
+    def createFunctions(self):
         self.dbcursor.execute("CREATE FUNCTION IF NOT EXISTS\
                         days(issue date) RETURNS int DETERMINISTIC\
                            BEGIN DECLARE currentdate DATE;\
@@ -114,7 +114,7 @@ class MySqlDB:
 
         print("Functions Created Successfully")
 
-    def CreateStoredProcedures(self):
+    def createStoredProcedures(self):
         self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
                                 getbookcolumnlist()\
         	                     BEGIN\
@@ -190,12 +190,12 @@ class MySqlDB:
 
     def __init__(self):
         try:
-            self.ConnectToMysql()
-            self.dbcursor = self.ConnectToDatabase("librarydb")
-            self.CreateFunctions()
-            self.CreateTables()
-            self.CreateViews()
-            self.CreateStoredProcedures()
+            self.connectToMysql()
+            self.dbcursor = self.connectToDatabase("librarydb")
+            self.createFunctions()
+            self.createTables()
+            self.createViews()
+            self.createStoredProcedures()
         except Exception as e:
             print(e)
 

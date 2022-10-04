@@ -1,14 +1,7 @@
 import mysql.connector
 
-"""
-Database features
 
-create views for books and users
-create a function to calculate fine
-"""
-
-
-class mysqlDB:
+class MySqlDB:
     def ConnectToMysql(self):
         try:
             self.db = mysql.connector.connect(
@@ -206,12 +199,10 @@ class mysqlDB:
         except Exception as e:
             print(e)
 
+
 if __name__ == "__main__":
-    r = mysqlDB()
-    def getstoredproceduredata():
-        for result in r.dbcursor.stored_results():
-            return result.fetchall()
+    # r = MySqlDB()
     try:
-         pass
+        pass
     except Exception as e:
         print(e)

@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtCore import QDate
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QComboBox, QMessageBox, QDialog
-from database import mysqlDB
+from database import MySqlDB
 from main_form import Ui_main_view
 from user_form import Ui_user_dialog
 from book_form import Ui_book_dialog
@@ -12,8 +12,6 @@ from book_form import Ui_book_dialog
 # pyuic5 -x "I:\School project(dms,sdoop)\library_database_management.ui" -o main_form.py
 
 """
-ToDo - create add and delete functions for table widgets
-ToDo - create popup view for inputing books and users
 """
 
 
@@ -28,36 +26,36 @@ class MainWindow:
         self.ui.setupUi(self.main_win)
 
         # Initializing Mysql Cursor
-        self.sql = mysqlDB()
+        self.sql = MySqlDB()
         self.cursor = self.sql.dbcursor
 
         # Setting Main Page
         self.ui.stackedWidget.setCurrentWidget(self.ui.main_page)
 
-        # Initilizing books,users,issued lists
-        self.GetUserColumns()
-        self.GetUsersData()
+        # Initializing books,users,issued lists
+        self.getUserColumns()
+        self.getUsersData()
 
-        self.GetBookColumns()
-        self.GetBooksData()
+        self.getBookColumns()
+        self.getBooksData()
 
-        self.GetIssuedColumns()
-        self.GetIssuedData()
+        self.getIssuedColumns()
+        self.getIssuedData()
 
-        self.GetAllowedBooks()
+        self.getAllowedBooks()
 
         # Initialing all pages
-        self.MainPage()
-        self.IssuePage()
-        self.ReturnPage()
-        self.BooksPage()
-        self.UsersPage()
-        self.BookStatusPage()
+        self.mainPage()
+        self.issuePage()
+        self.returnPage()
+        self.booksPage()
+        self.usersPage()
+        self.bookStatusPage()
 
     ###############################################################################################################
 
     ###############################################################################################################
-    def MainPage(self):
+    def mainPage(self):
         # Home Page
         self.issue_button = self.ui.issue_button
         self.return_button = self.ui.return_button
@@ -71,7 +69,7 @@ class MainWindow:
         self.users_button.clicked.connect(self.goto_user_page)
         self.bk_status_button.clicked.connect(self.goto_BookStatus_page)
 
-    def IssuePage(self):
+    def issuePage(self):
         # Issue Page
         self.issue_page_back_button = self.ui.issue_back_button
         self.issue_page_user_combo_box = self.ui.issue_user_comboBox
@@ -85,8 +83,8 @@ class MainWindow:
 
         self.issue_page_back_button.clicked.connect(self.goto_main_page)
         # combobox on change functions
-        self.issue_page_book_combo_box.activated.connect(self.IssueComboAction)
-        self.issue_page_user_combo_box.activated.connect(self.IssueComboAction)
+        self.issue_page_book_combo_box.activated.connect(self.issueComboAction)
+        self.issue_page_user_combo_box.activated.connect(self.issueComboAction)
 
         # setting properties for book combobox
         self.issue_page_book_combo_box.setEditable(True)
@@ -99,20 +97,20 @@ class MainWindow:
         self.issue_page_user_combo_box.setInsertPolicy(QComboBox.NoInsert)
 
         # confirm button inits
-        self.issue_page_confirm_button.clicked.connect(self.ConfirmIssue)
-        self.issue_page_book_combo_box.currentTextChanged.connect(self.IssueComboAction)
-        self.issue_page_user_combo_box.currentTextChanged.connect(self.IssueComboAction)
+        self.issue_page_confirm_button.clicked.connect(self.confirmIssue)
+        self.issue_page_book_combo_box.currentTextChanged.connect(self.issueComboAction)
+        self.issue_page_user_combo_box.currentTextChanged.connect(self.issueComboAction)
         self.issue_page_datedit.setCalendarPopup(True)
         self.today = QDate().currentDate()
         self.issue_page_datedit.setDate(self.today)
 
-        self.issue_page_datedit.dateChanged.connect(self.SetReturnDate)
-        self.issue_page_return_day_spinbox.textChanged.connect(self.SetReturnDate)
+        self.issue_page_datedit.dateChanged.connect(self.setReturnDate)
+        self.issue_page_return_day_spinbox.textChanged.connect(self.setReturnDate)
         self.return_date = self.issue_page_datedit.date().addDays(self.issue_page_return_day_spinbox.value()).toPyDate()
         self.issue_page_return_date_label.setText(
             str(self.return_date.day) + "-" + str(self.return_date.month) + "-" + str(self.return_date.year))
 
-    def ReturnPage(self):
+    def returnPage(self):
         # Return Page
         # Info Labels
         self.return_name = self.ui.return_user
@@ -126,15 +124,15 @@ class MainWindow:
         self.confirm_return = self.ui.confirm_return_pushButton
         self.return_page_back_button = self.ui.return_back_button
 
-        self.return_combo_box.currentTextChanged.connect(self.ReturnComboBox)
+        self.return_combo_box.currentTextChanged.connect(self.returnComboBox)
         # setting properties for book combobox
         self.return_combo_box.setEditable(True)
         self.return_combo_box.completer().setCompletionMode(QCompleter.PopupCompletion)
         self.return_combo_box.setInsertPolicy(QComboBox.NoInsert)
-        self.confirm_return.clicked.connect(self.ConfirmReturn)
+        self.confirm_return.clicked.connect(self.confirmReturn)
         self.return_page_back_button.clicked.connect(self.goto_main_page)
 
-    def BooksPage(self):
+    def booksPage(self):
         # Book Page
         self.books_page_back_button = self.ui.book_back_Button
 
@@ -144,11 +142,11 @@ class MainWindow:
         self.book_add_book = self.ui.addBook_pushButton
         self.book_remove_book = self.ui.delBook_pushButton
 
-        self.book_add_book.clicked.connect(self.AddBooks)
-        self.book_remove_book.clicked.connect(self.DelBooks)
+        self.book_add_book.clicked.connect(self.addBooks)
+        self.book_remove_book.clicked.connect(self.delBooks)
         self.books_page_back_button.clicked.connect(self.goto_main_page)
 
-    def UsersPage(self):
+    def usersPage(self):
         # Users page
         self.users_page_back_button = self.ui.user_back_button
 
@@ -158,11 +156,11 @@ class MainWindow:
         self.user_add_user = self.ui.addUser_pushButton
         self.user_remove_user = self.ui.delUser_pushButton
 
-        self.user_add_user.clicked.connect(self.AddUsers)
-        self.user_remove_user.clicked.connect(self.DelUsers)
+        self.user_add_user.clicked.connect(self.addUsers)
+        self.user_remove_user.clicked.connect(self.delUsers)
         self.users_page_back_button.clicked.connect(self.goto_main_page)
 
-    def BookStatusPage(self):
+    def bookStatusPage(self):
         # Book Status page
         self.bk_status_back_button = self.ui.book_status_back_button
         self.bk_status_back_button.clicked.connect(self.goto_main_page)
@@ -179,56 +177,54 @@ class MainWindow:
         for result in self.cursor.stored_results():
             return result.fetchall()
 
-
-    def GetBookColumns(self):
+    def getBookColumns(self):
         self.cursor.callproc('getbookcolumnlist')
         tmp = self.getstoredproceduredata()
         self.books_column_names = [x[0] for x in tmp]
 
-
-    def GetBooksData(self):
+    def getBooksData(self):
         self.cursor.callproc("getbooklist")
         tmp = self.getstoredproceduredata()
         self.books_list = [x for x in tmp]
         self.book_name_dict = dict([(str(x[0]), [x[1], x[2]]) for x in self.books_list])
 
-    def GetUserColumns(self):
+    def getUserColumns(self):
         self.cursor.callproc('getusercolumnlist')
         tmp = self.getstoredproceduredata()
         self.users_column_names = [x[0] for x in tmp]
 
-    def GetUsersData(self):
+    def getUsersData(self):
         self.cursor.callproc("getuserlist")
         tmp = self.getstoredproceduredata()
         self.user_list = [x for x in tmp]
         self.user_name_dict = dict([(str(x[0]), [x[1], x[2]]) for x in self.user_list])
 
-    def GetIssuedColumns(self):
+    def getIssuedColumns(self):
         self.cursor.callproc("getissuedcolumnlist")
         tmp = self.getstoredproceduredata()
         self.issued_column_names = [x[0] for x in tmp]
 
-    def GetIssuedData(self):
+    def getIssuedData(self):
         self.cursor.callproc("getissuedlist")
         tmp = self.getstoredproceduredata()
         self.issued_list = [x for x in tmp]
         self.issue_dict = dict([(str(x[0]), [x[1], x[2], x[3], x[4], x[5]]) for x in self.issued_list])
 
-    def GetAllowedBooks(self):
+    def getAllowedBooks(self):
         self.allowed_books = [y for y in self.books_list if y[0] not in [x[0] for x in self.issued_list]]
 
-    def RefreshLists(self):
+    def refreshLists(self):
         # print("executing refresh")
-        self.GetUsersData()
-        self.GetBooksData()
-        self.GetIssuedData()
-        self.GetAllowedBooks()
+        self.getUsersData()
+        self.getBooksData()
+        self.getIssuedData()
+        self.getAllowedBooks()
 
     ###############################################################################################################
 
     ###############################################################################################################
-    # table data for user and books page
-    def LoadBooksData(self):
+    # table data and functions for user and books page
+    def loadBooksData(self):
         # Adding columns to table
         self.book_table.setRowCount(len(self.books_list))
         self.book_table.setColumnCount(len(self.books_column_names))
@@ -249,7 +245,7 @@ class MainWindow:
 
             row += 1
 
-    def LoadUsersData(self):
+    def loadUsersData(self):
         self.user_table.setRowCount(len(self.user_list))
         self.user_table.setColumnCount(len(self.users_column_names))
         self.user_table.setHorizontalHeaderLabels(self.users_column_names)
@@ -268,7 +264,7 @@ class MainWindow:
             self.user_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(user[2])))
             row += 1
 
-    def LoadIssuedData(self):
+    def loadIssuedData(self):
         # Adding columns to table
         self.bk_issued_table.setRowCount(len(self.issued_list))
         self.bk_issued_table.setColumnCount(len(self.issued_column_names))
@@ -296,45 +292,45 @@ class MainWindow:
 
             row += 1
 
-    def AddBooks(self):
+    def addBooks(self):
         book_form = BookForm(book_list=self.books_list, cursor=self.cursor)
         book_form.exec()
-        self.RefreshLists()
+        self.refreshLists()
         self.goto_book_page()
 
-    def DelBooks(self):
+    def delBooks(self):
         try:
             index = self.book_table.currentRow()
             if index > -1:
                 query = "delete from books where ISBN = %s"
                 data = (self.book_table.item(index, 0).text(),)
                 self.cursor.callproc('delbooks', data)
-                ShowInfoMessage("Record successfully deleted", "Success", "Record deleted")
-                self.RefreshLists()
+                showInfoMessage("Record successfully deleted", "Success", "Record deleted")
+                self.refreshLists()
                 self.goto_book_page()
             else:
-                ShowErrorMessage("No item selected", "Item error", "Item not found")
+                showErrorMessage("No item selected", "Item error", "Item not found")
         except Exception as e:
             print("del", e)
 
-    def AddUsers(self):
+    def addUsers(self):
         user_form = UserForm(user_list=self.user_list, cursor=self.cursor)
         user_form.exec()
-        self.RefreshLists()
+        self.refreshLists()
         self.goto_user_page()
 
-    def DelUsers(self):
+    def delUsers(self):
         try:
             index = self.user_table.currentRow()
             if index > -1:
                 query = "delete from users where UID = %s"
                 data = (self.user_table.item(index, 0).text(),)
                 self.cursor.callproc('deluser', data)
-                ShowInfoMessage("Record successfully deleted", "Success", "Record deleted")
-                self.RefreshLists()
+                showInfoMessage("Record successfully deleted", "Success", "Record deleted")
+                self.refreshLists()
                 self.goto_user_page()
             else:
-                ShowErrorMessage("No item selected", "Item error", "Item not found")
+                showErrorMessage("No item selected", "Item error", "Item not found")
         except Exception as e:
             print("del", e)
 
@@ -342,7 +338,7 @@ class MainWindow:
 
     ###############################################################################################################
     # issue page functions
-    def IssueComboAction(self):
+    def issueComboAction(self):
         try:
             user = self.user_name_dict.get(self.issue_page_user_combo_box.currentText())
 
@@ -369,7 +365,7 @@ class MainWindow:
         except Exception as e:
             print(e)
 
-    def ConfirmIssue(self):
+    def confirmIssue(self):
         bookID = self.issue_page_book_combo_box.currentText()
         userID = self.issue_page_user_combo_box.currentText()
         issue = str(self.issue_page_datedit.date().toPyDate())
@@ -377,9 +373,9 @@ class MainWindow:
         data = (bookID, userID, issue, self.return_date)
         try:
             self.cursor.callproc('addissuebook', data)
-            self.RefreshLists()
+            self.refreshLists()
             self.goto_issue_page()
-            ShowInfoMessage("Book issued successfully", "Success", "Item added")
+            showInfoMessage("Book issued successfully", "Success", "Item added")
 
             self.issue_page_book_combo_box.setCurrentIndex(0)
 
@@ -390,9 +386,9 @@ class MainWindow:
 
 
         except Exception as e:
-            ShowErrorMessage(str(e), "Error", "Error")
+            showErrorMessage(str(e), "Error", "Error")
 
-    def SetReturnDate(self):
+    def setReturnDate(self):
         self.return_date = self.issue_page_datedit.date().addDays(self.issue_page_return_day_spinbox.value()).toPyDate()
         self.issue_page_return_date_label.setText(
             str(self.return_date.day) + "-" + str(self.return_date.month) + "-" + str(self.return_date.year))
@@ -402,10 +398,10 @@ class MainWindow:
     ###############################################################################################################
     # Return Page functions
 
-    def ReturnComboBox(self):
+    def returnComboBox(self):
 
-        data = self.issue_dict.get(
-            self.return_combo_box.currentText())  # [29227629, datetime.date(2022, 10, 3), datetime.date(2022, 10, 13)]
+        data = self.issue_dict.get(self.return_combo_box.currentText())
+        # [29227629, datetime.date(2022, 10, 3), datetime.date(2022, 10, 13)]
         # print(data)
         # print(self.user_name_dict)
         # print(self.book_name_dict)
@@ -424,7 +420,7 @@ class MainWindow:
         else:
             self.return_name.setText("Invalid selection")
 
-    def ConfirmReturn(self):
+    def confirmReturn(self):
         try:
             isbn = self.return_combo_box.currentText()  # [29227629, datetime.date(2022, 10, 3), datetime.date(2022, 10, 13)]
 
@@ -432,8 +428,8 @@ class MainWindow:
                 # query = "delete from issued where ISBN = %s"
                 data = (isbn,)
                 self.cursor.callproc('delissued', data)
-                ShowInfoMessage("Book returned successfully", "Success", "Record deleted")
-                self.RefreshLists()
+                showInfoMessage("Book returned successfully", "Success", "Record deleted")
+                self.refreshLists()
                 self.return_name.setText("")
                 self.return_book.setText("")
                 self.return_issue_date.setText("")
@@ -443,7 +439,7 @@ class MainWindow:
 
                 self.goto_return_page()
             else:
-                ShowErrorMessage("No item selected", "Item error", "Item not found")
+                showErrorMessage("No item selected", "Item error", "Item not found")
         except Exception as e:
             print(e)
 
@@ -483,21 +479,21 @@ class MainWindow:
 
     def goto_book_page(self):
         try:
-            self.LoadBooksData()
+            self.loadBooksData()
             self.ui.stackedWidget.setCurrentWidget(self.ui.book_page)
         except Exception as e:
             print(e)
 
     def goto_user_page(self):
         try:
-            self.LoadUsersData()
+            self.loadUsersData()
             self.ui.stackedWidget.setCurrentWidget(self.ui.user_page)
         except Exception as e:
             print(e)
 
     def goto_BookStatus_page(self):
         try:
-            self.LoadIssuedData()
+            self.loadIssuedData()
             self.ui.stackedWidget.setCurrentWidget(self.ui.book_status_page)
         except Exception as e:
             print(e)
@@ -510,10 +506,10 @@ class MainWindow:
             print(e)
 
     ###############################################################################################################
-    # message box functions
 
 
-def ShowErrorMessage(message, win_title, title):
+# message box functions
+def showErrorMessage(message, win_title, title):
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Critical)
     msg.setWindowTitle(win_title)
@@ -522,7 +518,7 @@ def ShowErrorMessage(message, win_title, title):
     msg.exec_()
 
 
-def ShowInfoMessage(message, win_title, title):
+def showInfoMessage(message, win_title, title):
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Information)
     msg.setWindowTitle(win_title)
@@ -543,14 +539,12 @@ class UserForm(QDialog):
         # getting book list and sql cursor
         self.user_list = user_list.copy()
         self.cursor = cursor
-        # if user_list is None:
-        #     user_list = []
 
         # connecting buttons
         self.ui.user_form_confirm.clicked.connect(self.submit_user_info)
         self.ui.user_form_cancel.clicked.connect(lambda _: self.close())
 
-    def submit_user_info(self):
+    def submitUserInfo(self):
         try:
             uid = random.randrange(1000000000, 9999999999)
             while uid in [x[0] for x in self.user_list]:
@@ -560,15 +554,14 @@ class UserForm(QDialog):
             phone = self.ui.user_phone.text()
 
             if len(fname) <= 1 or len(lname) <= 1:
-                ShowErrorMessage("Name cannot be empty", "Name Error", "Invalid Name")
+                showErrorMessage("Name cannot be empty", "Name Error", "Invalid Name")
             elif len(phone) != 10 and type(phone) != int:
-                ShowErrorMessage("Enter a valid phone number", "Phone Number Error",
+                showErrorMessage("Enter a valid phone number", "Phone Number Error",
                                  "Invalid Phone Number")
             else:
                 data = (uid, fname, lname, phone)
-                # query = "insert into users values (%s,%s,%s,%s)"
                 self.cursor.callproc('adduser', data)
-                ShowInfoMessage("Record added successfully", "Success", "Record Added")
+                showInfoMessage("Record added successfully", "Success", "Record Added")
                 self.close()
 
         except Exception as e:
@@ -592,7 +585,7 @@ class BookForm(QDialog):
         self.ui.book_form_confirm.clicked.connect(self.submit_book_info)
         self.ui.book_form_cancel.clicked.connect(lambda _: self.close())
 
-    def submit_book_info(self):
+    def submitBookInfo(self):
         try:
             bid = self.ui.isbn_input.text()
             fname = self.ui.auth_fname_input.text()
@@ -600,18 +593,17 @@ class BookForm(QDialog):
             book_name = self.ui.book_name_input.text()
 
             if type(bid) != int and len(bid) != 13:
-                ShowErrorMessage("ISBN is incorrect", "ISBN Error", "Invalid ISBN")
+                showErrorMessage("ISBN is incorrect", "ISBN Error", "Invalid ISBN")
             elif int(bid) in [x[0] for x in self.books_list]:
-                ShowErrorMessage("Book is already in database ", "ISBN Error", "ISBN exists")
+                showErrorMessage("Book is already in database ", "ISBN Error", "ISBN exists")
             elif len(fname) <= 1 or len(lname) <= 1:
-                ShowErrorMessage("Name cannot be empty", "Name Error", "Invalid Name")
+                showErrorMessage("Name cannot be empty", "Name Error", "Invalid Name")
             elif len(book_name) <= 1:
-                ShowErrorMessage("Book Name cannot be empty", "Name Error", "Invalid Name")
+                showErrorMessage("Book Name cannot be empty", "Name Error", "Invalid Name")
             else:
                 data = (bid, book_name, fname, lname)
-                # query = "insert into books values (%s,%s,%s,%s)"
                 self.cursor.callproc('addbook', data)
-                ShowInfoMessage("Record added successfully", "Success", "Record Added")
+                showInfoMessage("Record added successfully", "Success", "Record Added")
                 self.close()
         except Exception as e:
             print(e)

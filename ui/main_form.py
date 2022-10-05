@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_main_view(object):
+class Ui_main_form(object):
     def setupUi(self, main_view):
         main_view.setObjectName("main_view")
         main_view.resize(1000, 800)
@@ -581,7 +581,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     main_view = QtWidgets.QMainWindow()
-    ui = Ui_main_view()
+    ui = Ui_main_form()
     ui.setupUi(main_view)
     main_view.show()
     sys.exit(app.exec_())

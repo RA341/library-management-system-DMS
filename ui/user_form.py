@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_user_dialog(object):
+class UserDialogUi(object):
     def setupUi(self, user_dialog):
         user_dialog.setObjectName("user_dialog")
         user_dialog.resize(700, 500)
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     user_dialog = QtWidgets.QDialog()
-    ui = Ui_user_dialog()
+    ui = UserDialogUi()
     ui.setupUi(user_dialog)
     user_dialog.show()
     sys.exit(app.exec_())

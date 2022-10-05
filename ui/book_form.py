@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_book_dialog(object):
+class BookDialogUi(object):
     def setupUi(self, book_dialog):
         book_dialog.setObjectName("book_dialog")
         book_dialog.resize(700, 500)
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     book_dialog = QtWidgets.QDialog()
-    ui = Ui_book_dialog()
+    ui = BookDialogUi()
     ui.setupUi(book_dialog)
     book_dialog.show()
     sys.exit(app.exec_())

@@ -166,7 +166,6 @@ class MainWindow:
         self.bk_status_back_button.clicked.connect(self.goto_main_page)
 
         self.bk_issued_table = self.ui.bookStatus_tableWidget
-        # self.bk_issued_table.sele
         self.bk_issued_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
 
     ###############################################################################################################

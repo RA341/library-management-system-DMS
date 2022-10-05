@@ -9,7 +9,7 @@ from ui.user_form import UserDialogUi
 from ui.book_form import BookDialogUi
 
 # ui conversion code
-# pyuic5 -x "I:\School project(dms,sdoop)\library_database_management.ui" -o main_form.py
+# pyuic5 -x "\library_database_management.ui" -o main_form.py
 
 """
 """
@@ -308,8 +308,8 @@ class MainWindow:
                 self.goto_book_page()
             else:
                 showErrorMessage("No item selected", "Item error", "Item not found")
-        except Exception as e:
-            print("del", e)
+        except Exception as dele:
+            print("del", dele)
 
     def addUsers(self):
         user_form = UserForm(user_list=self.user_list, cursor=self.cursor)

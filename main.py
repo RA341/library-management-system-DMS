@@ -4,9 +4,9 @@ from PyQt5.QtCore import QDate
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QComboBox, QMessageBox, QDialog
 from database import MySqlDB
-from main_form import Ui_main_view
-from user_form import Ui_user_dialog
-from book_form import Ui_book_dialog
+from ui.main_form import Ui_main_form
+from ui.user_form import Ui_user_dialog
+from ui.book_form import Ui_book_dialog
 
 # ui conversion code
 # pyuic5 -x "I:\School project(dms,sdoop)\library_database_management.ui" -o main_form.py
@@ -22,7 +22,7 @@ class MainWindow:
         self.main_win.setFixedSize(1000, 800)
 
         # Adding ui file
-        self.ui = Ui_main_view()
+        self.ui = Ui_main_form()
         self.ui.setupUi(self.main_win)
 
         # Initializing Mysql Cursor

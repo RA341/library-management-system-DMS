@@ -104,7 +104,6 @@ class MySqlDB:
             print(views)
             quit(-1)
 
-
     def createFunctions(self):
         try:
             self.dbcursor.execute("CREATE FUNCTION IF NOT EXISTS\
@@ -217,7 +216,8 @@ class MySqlDB:
             print("Error Creating stored procedures")
             print(storedprocedure)
             quit(-1)
-    def __init__(self,dbname):
+
+    def __init__(self, dbname):
         try:
             self.dbname = dbname
             self.connectToMysql()

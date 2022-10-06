@@ -1,12 +1,14 @@
 import random
 import sys
-from PyQt5.QtCore import QDate
+
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QDate
 from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QComboBox, QMessageBox, QDialog
+
 from database import MySqlDB
+from ui.book_form import BookDialogUi
 from ui.main_form import MainFormUi
 from ui.user_form import UserDialogUi
-from ui.book_form import BookDialogUi
 
 # ui conversion code
 # pyuic5 -x "\library_database_management.ui" -o main_form.py

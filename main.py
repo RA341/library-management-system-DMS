@@ -26,7 +26,7 @@ class MainWindow:
         self.ui.setupUi(self.main_win)
 
         # Initializing Mysql Cursor
-        self.sql = MySqlDB()
+        self.sql = MySqlDB("librarydb")
         self.cursor = self.sql.dbcursor
 
         # Setting Main Page
@@ -162,11 +162,11 @@ class MainWindow:
 
     def bookStatusPage(self):
         # Book Status page
-        self.bk_status_back_button = self.ui.book_status_back_button
-        self.bk_status_back_button.clicked.connect(self.goto_main_page)
+        self.issued_back_button = self.ui.book_status_back_button
+        self.issued_back_button.clicked.connect(self.goto_main_page)
 
-        self.bk_issued_table = self.ui.bookStatus_tableWidget
-        self.bk_issued_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+        self.issued_table = self.ui.bookStatus_tableWidget
+        self.issued_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
 
     ###############################################################################################################
 
@@ -184,7 +184,7 @@ class MainWindow:
     def getBooksData(self):
         self.cursor.callproc("getbooklist")
         tmp = self.getStoredProcedureData()
-        self.books_list = [x for x in tmp]
+        self.books_list = tmp
         self.book_name_dict = dict([(str(x[0]), [x[1], x[2]]) for x in self.books_list])
 
     def getUserColumns(self):
@@ -195,7 +195,7 @@ class MainWindow:
     def getUsersData(self):
         self.cursor.callproc("getuserlist")
         tmp = self.getStoredProcedureData()
-        self.user_list = [x for x in tmp]
+        self.user_list = tmp
         self.user_name_dict = dict([(str(x[0]), [x[1], x[2]]) for x in self.user_list])
 
     def getIssuedColumns(self):
@@ -206,11 +206,15 @@ class MainWindow:
     def getIssuedData(self):
         self.cursor.callproc("getissuedlist")
         tmp = self.getStoredProcedureData()
-        self.issued_list = [x for x in tmp]
+        self.issued_list = tmp
         self.issue_dict = dict([(str(x[0]), [x[1], x[2], x[3], x[4], x[5]]) for x in self.issued_list])
 
     def getAllowedBooks(self):
-        self.allowed_books = [y for y in self.books_list if y[0] not in [x[0] for x in self.issued_list]]
+        self.cursor.callproc('getnonissuedbooklist')
+        tmp = self.getStoredProcedureData()
+        self.allowed_books = tmp
+        # print(tmp)
+        # print(self.allowed_books)
 
     def refreshLists(self):
         # print("executing refresh")
@@ -265,12 +269,12 @@ class MainWindow:
 
     def loadIssuedData(self):
         # Adding columns to table
-        self.bk_issued_table.setRowCount(len(self.issued_list))
-        self.bk_issued_table.setColumnCount(len(self.issued_column_names))
-        self.bk_issued_table.setHorizontalHeaderLabels(self.issued_column_names)
+        self.issued_table.setRowCount(len(self.issued_list))
+        self.issued_table.setColumnCount(len(self.issued_column_names))
+        self.issued_table.setHorizontalHeaderLabels(self.issued_column_names)
 
         # resizing columns
-        header = self.bk_issued_table.horizontalHeader()
+        header = self.issued_table.horizontalHeader()
         header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
@@ -282,12 +286,12 @@ class MainWindow:
         row = 0
 
         for book in self.issued_list:
-            self.bk_issued_table.setItem(row, 0, QtWidgets.QTableWidgetItem(str(book[0])))
-            self.bk_issued_table.setItem(row, 1, QtWidgets.QTableWidgetItem(str(book[1])))
-            self.bk_issued_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(book[2])))
-            self.bk_issued_table.setItem(row, 3, QtWidgets.QTableWidgetItem(str(book[3])))
-            self.bk_issued_table.setItem(row, 4, QtWidgets.QTableWidgetItem(str(book[4])))
-            self.bk_issued_table.setItem(row, 5, QtWidgets.QTableWidgetItem(str(book[5])))
+            self.issued_table.setItem(row, 0, QtWidgets.QTableWidgetItem(str(book[0])))
+            self.issued_table.setItem(row, 1, QtWidgets.QTableWidgetItem(str(book[1])))
+            self.issued_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(book[2])))
+            self.issued_table.setItem(row, 3, QtWidgets.QTableWidgetItem(str(book[3])))
+            self.issued_table.setItem(row, 4, QtWidgets.QTableWidgetItem(str(book[4])))
+            self.issued_table.setItem(row, 5, QtWidgets.QTableWidgetItem(str(book[5])))
 
             row += 1
 
@@ -303,13 +307,13 @@ class MainWindow:
             if index > -1:
                 data = (self.book_table.item(index, 0).text(),)
                 self.cursor.callproc('delbooks', data)
-                showInfoMessage("Record successfully deleted", "Success", "Record deleted")
+                showInfoMessage("Book successfully deleted", "Success", "Record deleted")
                 self.refreshLists()
                 self.goto_book_page()
             else:
-                showErrorMessage("No item selected", "Item error", "Item not found")
-        except Exception as dele:
-            print("del", dele)
+                showErrorMessage("No Book selected", "Item error", "Book not found")
+        except Exception as delete:
+            print("del", delete)
 
     def addUsers(self):
         user_form = UserForm(user_list=self.user_list, cursor=self.cursor)
@@ -323,11 +327,11 @@ class MainWindow:
             if index > -1:
                 data = (self.user_table.item(index, 0).text(),)
                 self.cursor.callproc('deluser', data)
-                showInfoMessage("Record successfully deleted", "Success", "Record deleted")
+                showInfoMessage("Member successfully deleted", "Success", "Record deleted")
                 self.refreshLists()
                 self.goto_user_page()
             else:
-                showErrorMessage("No item selected", "Item error", "Item not found")
+                showErrorMessage("No Member selected", "Item error", "Member not found")
         except Exception as e:
             print("del", e)
 
@@ -371,7 +375,7 @@ class MainWindow:
             self.cursor.callproc('addissuebook', data)
             self.refreshLists()
             self.goto_issue_page()
-            showInfoMessage("Book issued successfully", "Success", "Item added")
+            showInfoMessage("Book issued successfully", "Success", "Record added")
 
             self.issue_page_book_combo_box.setCurrentIndex(0)
 
@@ -434,7 +438,7 @@ class MainWindow:
 
                 self.goto_return_page()
             else:
-                showErrorMessage("No item selected", "Item error", "Item not found")
+                showErrorMessage("No Book ID selected", "Item error", "Book not found")
         except Exception as e:
             print(e)
 
@@ -551,12 +555,12 @@ class UserForm(QDialog):
             if len(fname) <= 1 or len(lname) <= 1:
                 showErrorMessage("Name cannot be empty", "Name Error", "Invalid Name")
             elif len(phone) != 10 and type(phone) != int:
-                showErrorMessage("Enter a valid phone number", "Phone Number Error",
+                showErrorMessage("Enter a valid phone number (10 digits)", "Phone Number Error",
                                  "Invalid Phone Number")
             else:
                 data = (uid, fname, lname, phone)
                 self.cursor.callproc('adduser', data)
-                showInfoMessage("Record added successfully", "Success", "Record Added")
+                showInfoMessage("Member added successfully", "Success", "Record Added")
                 self.close()
 
         except Exception as e:
@@ -588,7 +592,7 @@ class BookForm(QDialog):
             book_name = self.ui.book_name_input.text()
 
             if type(bid) != int and len(bid) != 13:
-                showErrorMessage("ISBN is incorrect", "ISBN Error", "Invalid ISBN")
+                showErrorMessage("ISBN is incorrect\nMake sure it is 13 digits only", "ISBN Error", "Invalid ISBN")
             elif int(bid) in [x[0] for x in self.books_list]:
                 showErrorMessage("Book is already in database ", "ISBN Error", "ISBN exists")
             elif len(fname) <= 1 or len(lname) <= 1:

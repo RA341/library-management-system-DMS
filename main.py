@@ -10,12 +10,6 @@ from ui.book_form import BookDialogUi
 from ui.main_form import MainFormUi
 from ui.user_form import UserDialogUi
 
-# ui conversion code
-# pyuic5 -x "\library_database_management.ui" -o main_form.py
-
-"""
-"""
-
 
 class MainWindow:
     def __init__(self):
@@ -215,11 +209,8 @@ class MainWindow:
         self.cursor.callproc('getnonissuedbooklist')
         tmp = self.getStoredProcedureData()
         self.allowed_books = tmp
-        # print(tmp)
-        # print(self.allowed_books)
 
     def refreshLists(self):
-        # print("executing refresh")
         self.getUsersData()
         self.getBooksData()
         self.getIssuedData()
@@ -350,10 +341,8 @@ class MainWindow:
     def issueComboAction(self):
         try:
             user = self.user_name_dict.get(self.issue_page_user_combo_box.currentText())
-
             book = self.book_name_dict.get(self.issue_page_book_combo_box.currentText())
-            # print("user", user)
-            # print("booooks", book)
+
             if book:
                 self.issue_page_book_label.setText(book[1])
             else:
@@ -405,12 +394,7 @@ class MainWindow:
     # Return Page functions
 
     def returnComboBox(self):
-
         data = self.issue_dict.get(self.return_combo_box.currentText())
-        # [29227629, datetime.date(2022, 10, 3), datetime.date(2022, 10, 13)]
-        # print(data)
-        # print(self.user_name_dict)
-        # print(self.book_name_dict)
 
         if data:
             try:
@@ -429,10 +413,8 @@ class MainWindow:
     def confirmReturn(self):
         try:
             isbn = self.return_combo_box.currentText()
-            # [29227629, datetime.date(2022, 10, 3), datetime.date(2022, 10, 13)]
 
             if isbn:
-                # query = "delete from issued where ISBN = %s"
                 data = (isbn,)
                 self.cursor.callproc('delissued', data)
                 showInfoMessage("Book returned successfully", "Success", "Record deleted")

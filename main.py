@@ -45,7 +45,7 @@ class MainWindow:
         self.getIssuedData()
 
         self.getAllowedBooks()
-
+        print(self.issued_list)
         # Initialing all pages
         self.mainPage()
         self.issuePage()
@@ -308,10 +308,13 @@ class MainWindow:
             index = self.book_table.currentRow()
             if index > -1:
                 data = (self.book_table.item(index, 0).text(),)
-                self.cursor.callproc('delbooks', data)
-                showInfoMessage("Book successfully deleted", "Success", "Record deleted")
-                self.refreshLists()
-                self.goto_book_page()
+                if int(data[0]) in [x[0] for x in self.issued_list]:
+                    showErrorMessage("Book is currently Issued", 'Error', 'Book cannot be deleted')
+                else:
+                    self.cursor.callproc('delbooks', data)
+                    showInfoMessage("Book successfully deleted", "Success", "Record deleted")
+                    self.refreshLists()
+                    self.goto_book_page()
             else:
                 showErrorMessage("No Book selected", "Item error", "Book not found")
         except Exception as delete:
@@ -328,10 +331,13 @@ class MainWindow:
             index = self.user_table.currentRow()
             if index > -1:
                 data = (self.user_table.item(index, 0).text(),)
-                self.cursor.callproc('deluser', data)
-                showInfoMessage("Member successfully deleted", "Success", "Record deleted")
-                self.refreshLists()
-                self.goto_user_page()
+                if int(data[0]) in [x[1] for x in self.issued_list]:
+                    showErrorMessage("Member currently has Issued books", 'Error', 'Member cannot be deleted')
+                else:
+                    self.cursor.callproc('deluser', data)
+                    showInfoMessage("Member successfully deleted", "Success", "Record deleted")
+                    self.refreshLists()
+                    self.goto_user_page()
             else:
                 showErrorMessage("No Member selected", "Item error", "Member not found")
         except Exception as e:

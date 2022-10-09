@@ -30,16 +30,10 @@ class MainWindow:
 
         # Initializing books,users,issued lists
         self.getUserColumns()
-        self.getUsersData()
-
         self.getBookColumns()
-        self.getBooksData()
-
         self.getIssuedColumns()
-        self.getIssuedData()
+        self.getDataLists()
 
-        self.getAllowedBooks()
-        print(self.issued_list)
         # Initialing all pages
         self.mainPage()
         self.issuePage()
@@ -210,7 +204,7 @@ class MainWindow:
         tmp = self.getStoredProcedureData()
         self.allowed_books = tmp
 
-    def refreshLists(self):
+    def getDataLists(self):
         self.getUsersData()
         self.getBooksData()
         self.getIssuedData()
@@ -291,7 +285,7 @@ class MainWindow:
     def addBooks(self):
         book_form = BookForm(book_list=self.books_list, cursor=self.cursor)
         book_form.exec()
-        self.refreshLists()
+        self.getDataLists()
         self.goto_book_page()
 
     def delBooks(self):
@@ -304,7 +298,7 @@ class MainWindow:
                 else:
                     self.cursor.callproc('delbooks', data)
                     showInfoMessage("Book successfully deleted", "Success", "Record deleted")
-                    self.refreshLists()
+                    self.getDataLists()
                     self.goto_book_page()
             else:
                 showErrorMessage("No Book selected", "Item error", "Book not found")
@@ -314,7 +308,7 @@ class MainWindow:
     def addUsers(self):
         user_form = UserForm(user_list=self.user_list, cursor=self.cursor)
         user_form.exec()
-        self.refreshLists()
+        self.getDataLists()
         self.goto_user_page()
 
     def delUsers(self):
@@ -327,7 +321,7 @@ class MainWindow:
                 else:
                     self.cursor.callproc('deluser', data)
                     showInfoMessage("Member successfully deleted", "Success", "Record deleted")
-                    self.refreshLists()
+                    self.getDataLists()
                     self.goto_user_page()
             else:
                 showErrorMessage("No Member selected", "Item error", "Member not found")
@@ -370,7 +364,7 @@ class MainWindow:
         data = (bookID, userID, issue, self.return_date)
         try:
             self.cursor.callproc('addissuebook', data)
-            self.refreshLists()
+            self.getDataLists()
             self.goto_issue_page()
             showInfoMessage("Book issued successfully", "Success", "Record added")
 
@@ -418,7 +412,7 @@ class MainWindow:
                 data = (isbn,)
                 self.cursor.callproc('delissued', data)
                 showInfoMessage("Book returned successfully", "Success", "Record deleted")
-                self.refreshLists()
+                self.getDataLists()
                 self.return_name.setText("")
                 self.return_book.setText("")
                 self.return_issue_date.setText("")

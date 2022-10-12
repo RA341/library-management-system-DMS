@@ -545,11 +545,11 @@ class UserForm(QDialog):
                 data = (uid, fname, lname, phone)
                 self.cursor.callproc('adduser', data)
                 showInfoMessage("Member added successfully", "Success", "Record Added")
+
                 self.close()
 
         except Exception as e:
             print(e)
-
 
 class BookForm(QDialog):
     def __init__(self, parent=None, book_list=None, cursor=None):

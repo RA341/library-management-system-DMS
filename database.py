@@ -211,6 +211,20 @@ class MySqlDB:
                                             insert into books values (bid, book_name, fname, lname);\
                                         END")
 
+            self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                                 updateuser (in uid bigint, in fname varchar(30), in lname varchar(30), in phone varchar(30))\
+                                                    BEGIN\
+                                                        update users set FName=fname, LName=lname, phoneNo=phone\
+                                                        where UID = uid;\
+                                                    END")
+
+            self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
+                                                 updatebook (in bid bigint, in book_name varchar(30), in fname varchar(30), in lname varchar(30))\
+                                                    BEGIN\
+                                                        update books set Book_Name=book_name, Author_FName=fname, Author_LName=lname\
+                                                        where ISBN = bid;\
+                                                    END")
+
             print("Stored Procedures created Successfully")
         except Exception as storedprocedure:
             print("Error Creating stored procedures")
@@ -231,8 +245,7 @@ class MySqlDB:
 
 
 if __name__ == "__main__":
-    r = MySqlDB('librarydb')
     try:
-        pass
+        r = MySqlDB('librarydb')
     except Exception as e:
         print(e)

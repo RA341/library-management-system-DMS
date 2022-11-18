@@ -157,13 +157,18 @@ class MainWindow:
         self.users_page_back_button.clicked.connect(self.goto_main_page)
 
     def bookStatusPage(self):
+
         # Book Status page
         self.issued_back_button = self.ui.book_status_back_button
         self.issued_back_button.clicked.connect(self.goto_main_page)
-
+        self.issue_refresh = self.ui.refreshlist_butt
+        self.issue_refresh.clicked.connect(self.refreshfunc)
         self.issued_table = self.ui.bookStatus_tableWidget
         self.issued_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
 
+    def refreshfunc(self):
+        self.getDataLists()
+        self.goto_BookStatus_page()
     ###############################################################################################################
 
     ###############################################################################################################

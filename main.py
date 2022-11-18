@@ -130,10 +130,13 @@ class MainWindow:
         self.book_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
 
         self.book_add_book = self.ui.addBook_pushButton
+        self.book_update_book = self.ui.upBook_pushButton
         self.book_remove_book = self.ui.delBook_pushButton
 
         self.book_add_book.clicked.connect(self.addBooks)
+        self.book_update_book.clicked.connect(self.updateBooks)
         self.book_remove_book.clicked.connect(self.delBooks)
+
         self.books_page_back_button.clicked.connect(self.goto_main_page)
 
     def usersPage(self):
@@ -144,10 +147,13 @@ class MainWindow:
         self.user_table.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
 
         self.user_add_user = self.ui.addUser_pushButton
+        self.user_update_user = self.ui.upUser_pushButton
         self.user_remove_user = self.ui.delUser_pushButton
 
         self.user_add_user.clicked.connect(self.addUsers)
+        self.user_update_user.clicked.connect(self.updateUsers)
         self.user_remove_user.clicked.connect(self.delUsers)
+
         self.users_page_back_button.clicked.connect(self.goto_main_page)
 
     def bookStatusPage(self):
@@ -248,7 +254,6 @@ class MainWindow:
         row = 0
 
         for user in self.user_list:
-            # print(user)
             self.user_table.setItem(row, 0, QtWidgets.QTableWidgetItem(str(user[0])))
             self.user_table.setItem(row, 1, QtWidgets.QTableWidgetItem(user[1]))
             self.user_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(user[2])))
@@ -288,6 +293,20 @@ class MainWindow:
         self.getDataLists()
         self.goto_book_page()
 
+    def updateBooks(self):
+        index = self.book_table.currentRow()
+        if index > -1:
+            data = (self.book_table.item(index, 0).text(),)
+            if int(data[0]) in [x[0] for x in self.issued_list]:
+                showErrorMessage("Return the book first", 'Error', 'Book cannot be altered')
+            else:
+                book_form = BookForm(book_list=self.book_name_dict, bid=data[0], cursor=self.cursor)
+                book_form.exec()
+                self.getDataLists()
+                self.goto_book_page()
+        else:
+            showErrorMessage("No Book selected", "Item error", "Book not found")
+
     def delBooks(self):
         try:
             index = self.book_table.currentRow()
@@ -310,6 +329,24 @@ class MainWindow:
         user_form.exec()
         self.getDataLists()
         self.goto_user_page()
+
+    def updateUsers(self):
+        try:
+            index = self.user_table.currentRow()
+            if index > -1:
+                data = (self.user_table.item(index, 0).text(),)
+                if int(data[0]) in [x[1] for x in self.issued_list]:
+                    showErrorMessage("Member currently has Issued books\nReturn the books first", 'Error',
+                                     'Member cannot be updated')
+                else:
+                    user_form = UserForm(user_list=self.user_name_dict, uid=data[0], cursor=self.cursor)
+                    user_form.exec()
+                    self.getDataLists()
+                    self.goto_user_page()
+            else:
+                showErrorMessage("No Member selected", "Item error", "Member not found")
+        except Exception as e:
+            print("del", e)
 
     def delUsers(self):
         try:
@@ -407,7 +444,6 @@ class MainWindow:
     def confirmReturn(self):
         try:
             isbn = self.return_combo_box.currentText()
-
             if isbn:
                 data = (isbn,)
                 self.cursor.callproc('delissued', data)
@@ -488,7 +524,8 @@ class MainWindow:
         except Exception as e:
             print(e)
 
-    ###############################################################################################################
+
+################################################################################################################
 
 
 # message box functions
@@ -510,8 +547,10 @@ def showInfoMessage(message, win_title, title):
     msg.exec_()
 
 
+################################################################################################################
+
 class UserForm(QDialog):
-    def __init__(self, parent=None, user_list=None, cursor=None):
+    def __init__(self, parent=None, user_list=None, uid=None, cursor=None):
         # Initializing main app window
         super().__init__(parent)
 
@@ -524,7 +563,15 @@ class UserForm(QDialog):
         self.cursor = cursor
 
         # connecting buttons
-        self.ui.user_form_confirm.clicked.connect(self.submitUserInfo)
+        if isinstance(user_list, list):
+            self.ui.user_form_confirm.clicked.connect(self.submitUserInfo)
+        elif isinstance(user_list, dict):
+            self.ui.form_title.setText("Update Member Details")
+            self.ui.user_fname_input.setText(self.user_list[uid][0].split()[0])
+            self.ui.user_lname_input.setText(self.user_list[uid][0].split()[1])
+            self.ui.user_phone.setText(self.user_list[uid][1])
+            self.ui.user_form_confirm.clicked.connect(lambda _: self.updateUserInfo(uid))
+
         self.ui.user_form_cancel.clicked.connect(lambda _: self.close())
 
     def submitUserInfo(self):
@@ -545,14 +592,36 @@ class UserForm(QDialog):
                 data = (uid, fname, lname, phone)
                 self.cursor.callproc('adduser', data)
                 showInfoMessage("Member added successfully", "Success", "Record Added")
-
                 self.close()
 
         except Exception as e:
             print(e)
 
+    def updateUserInfo(self, uid):
+        try:
+            fname = self.ui.user_fname_input.text()
+            lname = self.ui.user_lname_input.text()
+            phone = self.ui.user_phone.text()
+
+            if len(fname) <= 1 or len(lname) <= 1:
+                showErrorMessage("Name cannot be empty", "Name Error", "Invalid Name")
+            elif len(phone) != 10 and type(phone) != int:
+                showErrorMessage("Enter a valid phone number (10 digits)", "Phone Number Error",
+                                 "Invalid Phone Number")
+            else:
+                data = (uid, fname, lname, phone)
+                self.cursor.callproc('updateuser', data)
+                showInfoMessage("Member updated successfully", "Success", "Record updated")
+                self.close()
+
+        except Exception as e:
+            print(e)
+
+
+#########################################################################
+
 class BookForm(QDialog):
-    def __init__(self, parent=None, book_list=None, cursor=None):
+    def __init__(self, parent=None, book_list=None, bid=None, cursor=None):
         # Initializing main app window
         super().__init__(parent)
 
@@ -561,11 +630,20 @@ class BookForm(QDialog):
         self.ui.setupUi(self)
 
         # getting book list and sql cursor
-        self.books_list = book_list.copy()
         self.cursor = cursor
+        self.books_list = book_list.copy()
 
-        # connecting buttons
-        self.ui.book_form_confirm.clicked.connect(self.submitBookInfo)
+        if isinstance(book_list, list):
+            self.ui.book_form_confirm.clicked.connect(self.submitBookInfo)
+        elif isinstance(book_list, dict):
+            self.ui.isbn_input.setHidden(True)
+            self.ui.label.setHidden(True)
+            self.ui.form_title.setText("Update Book Details")
+            self.ui.auth_fname_input.setText(self.books_list[bid][0].split()[0])
+            self.ui.auth_lname_input.setText(self.books_list[bid][0].split()[1])
+            self.ui.book_name_input.setText(self.books_list[bid][1])
+            self.ui.book_form_confirm.clicked.connect(lambda _: self.updateBookInfo(bid))
+
         self.ui.book_form_cancel.clicked.connect(lambda _: self.close())
 
     def submitBookInfo(self):
@@ -587,6 +665,24 @@ class BookForm(QDialog):
                 data = (bid, book_name, fname, lname)
                 self.cursor.callproc('addbook', data)
                 showInfoMessage("Record added successfully", "Success", "Record Added")
+                self.close()
+        except Exception as e:
+            print(e)
+
+    def updateBookInfo(self, bid):
+        try:
+            fname = self.ui.auth_fname_input.text()
+            lname = self.ui.auth_lname_input.text()
+            book_name = self.ui.book_name_input.text()
+
+            if len(fname) <= 1 or len(lname) <= 1:
+                showErrorMessage("Name cannot be empty", "Name Error", "Invalid Name")
+            elif len(book_name) <= 1:
+                showErrorMessage("Book Name cannot be empty", "Name Error", "Invalid Name")
+            else:
+                data = (bid, book_name, fname, lname)
+                self.cursor.callproc('updatebook', data)
+                showInfoMessage("Record updated successfully", "Success", "Record updated")
                 self.close()
         except Exception as e:
             print(e)

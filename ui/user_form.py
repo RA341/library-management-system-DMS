@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'I:\School project(dms,sdoop)\user_form.ui'
+# Form implementation generated from reading ui file 'I:\School project(dms,sdoop)\dms\ui files\user_form.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
@@ -21,13 +21,13 @@ class UserDialogUi(object):
         sizePolicy.setHeightForWidth(user_dialog.sizePolicy().hasHeightForWidth())
         user_dialog.setSizePolicy(sizePolicy)
         self.user_phone = QtWidgets.QLineEdit(user_dialog)
-        self.user_phone.setGeometry(QtCore.QRect(150, 150, 161, 41))
+        self.user_phone.setGeometry(QtCore.QRect(154, 232, 161, 41))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.user_phone.setFont(font)
         self.user_phone.setObjectName("user_phone")
         self.label_2 = QtWidgets.QLabel(user_dialog)
-        self.label_2.setGeometry(QtCore.QRect(20, 150, 101, 41))
+        self.label_2.setGeometry(QtCore.QRect(24, 232, 101, 41))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_2.setFont(font)
@@ -36,25 +36,25 @@ class UserDialogUi(object):
         self.user_form_cancel.setGeometry(QtCore.QRect(410, 340, 151, 41))
         self.user_form_cancel.setObjectName("user_form_cancel")
         self.user_lname_input = QtWidgets.QLineEdit(user_dialog)
-        self.user_lname_input.setGeometry(QtCore.QRect(488, 59, 151, 41))
+        self.user_lname_input.setGeometry(QtCore.QRect(492, 141, 151, 41))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.user_lname_input.setFont(font)
         self.user_lname_input.setObjectName("user_lname_input")
         self.user_fname_input = QtWidgets.QLineEdit(user_dialog)
-        self.user_fname_input.setGeometry(QtCore.QRect(150, 60, 161, 41))
+        self.user_fname_input.setGeometry(QtCore.QRect(154, 142, 161, 41))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.user_fname_input.setFont(font)
         self.user_fname_input.setObjectName("user_fname_input")
         self.label_3 = QtWidgets.QLabel(user_dialog)
-        self.label_3.setGeometry(QtCore.QRect(356, 58, 101, 41))
+        self.label_3.setGeometry(QtCore.QRect(360, 140, 101, 41))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_3.setFont(font)
         self.label_3.setObjectName("label_3")
         self.label = QtWidgets.QLabel(user_dialog)
-        self.label.setGeometry(QtCore.QRect(20, 59, 101, 41))
+        self.label.setGeometry(QtCore.QRect(24, 141, 101, 41))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label.setFont(font)
@@ -62,6 +62,13 @@ class UserDialogUi(object):
         self.user_form_confirm = QtWidgets.QPushButton(user_dialog)
         self.user_form_confirm.setGeometry(QtCore.QRect(170, 340, 151, 41))
         self.user_form_confirm.setObjectName("user_form_confirm")
+        self.form_title = QtWidgets.QLabel(user_dialog)
+        self.form_title.setGeometry(QtCore.QRect(190, 40, 341, 51))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.form_title.setFont(font)
+        self.form_title.setAlignment(QtCore.Qt.AlignCenter)
+        self.form_title.setObjectName("form_title")
 
         self.retranslateUi(user_dialog)
         QtCore.QMetaObject.connectSlotsByName(user_dialog)
@@ -74,13 +81,14 @@ class UserDialogUi(object):
         self.label_3.setText(_translate("user_dialog", "Last Name"))
         self.label.setText(_translate("user_dialog", "First Name"))
         self.user_form_confirm.setText(_translate("user_dialog", "Confirm"))
+        self.form_title.setText(_translate("user_dialog", "Enter new member details"))
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     user_dialog = QtWidgets.QDialog()
-    ui = UserDialogUi()
+    ui = Ui_user_dialog()
     ui.setupUi(user_dialog)
     user_dialog.show()
     sys.exit(app.exec_())

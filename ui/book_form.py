@@ -91,7 +91,7 @@ class BookDialogUi(object):
 
     def retranslateUi(self, book_dialog):
         _translate = QtCore.QCoreApplication.translate
-        book_dialog.setWindowTitle(_translate("book_dialog", "Dialog"))
+        book_dialog.setWindowTitle(_translate("book_dialog", " "))
         self.label_4.setText(_translate("book_dialog", "Author Last Name"))
         self.book_form_confirm.setText(_translate("book_dialog", "Confirm"))
         self.book_form_cancel.setText(_translate("book_dialog", "Cancel"))

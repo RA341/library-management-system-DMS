@@ -549,7 +549,7 @@ class MainFormUi(object):
 
     def retranslateUi(self, main_view):
         _translate = QtCore.QCoreApplication.translate
-        main_view.setWindowTitle(_translate("main_view", "MainWindow"))
+        main_view.setWindowTitle(_translate("main_view", "Library Management System"))
         self.title_label.setText(_translate("main_view", "Library Management System"))
         self.issue_button.setText(_translate("main_view", "Issue Books"))
         self.return_button.setText(_translate("main_view", "Return Books"))
@@ -591,6 +591,30 @@ class MainFormUi(object):
         self.title_label_8.setText(_translate("main_view", "Book status"))
         self.book_status_back_button.setText(_translate("main_view", "Back"))
 
+        font = QtGui.QFont('Arial', 12)
+        font.setBold(True)
+        self.name_info_label.setFont(font)
+        self.book_info_label.setFont(font)
+        self.return_date_label.setFont(font)
+        self.issue_date.setFont(font)
+        self.return_return_date.setFont(font)
+        self.return_user.setFont(font)
+        self.return_book.setFont(font)
+        self.label_22.setFont(font)
+        self.label_17.setFont(font)
+
+        font2 = QtGui.QFont('Times', 11)
+        self.label_9.setFont(font2)
+        self.label_13.setFont(font2)
+        self.label_11.setFont(font2)
+        self.label_15.setFont(font2)
+        self.label_21.setFont(font2)
+        self.label_18.setFont(font2)
+        self.label_19.setFont(font2)
+        self.label_8.setFont(font2)
+        self.label_7.setFont(font2)
+        self.label_5.setFont(font2)
+        self.label_6.setFont(font2)
 
 if __name__ == "__main__":
     import sys

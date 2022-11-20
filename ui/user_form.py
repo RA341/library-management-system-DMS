@@ -88,7 +88,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     user_dialog = QtWidgets.QDialog()
-    ui = Ui_user_dialog()
+    ui = UserDialogUi()
     ui.setupUi(user_dialog)
     user_dialog.show()
     sys.exit(app.exec_())

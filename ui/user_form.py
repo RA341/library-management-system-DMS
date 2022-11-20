@@ -75,7 +75,7 @@ class UserDialogUi(object):
 
     def retranslateUi(self, user_dialog):
         _translate = QtCore.QCoreApplication.translate
-        user_dialog.setWindowTitle(_translate("user_dialog", " "))
+        user_dialog.setWindowTitle(_translate("user_dialog", "   "))
         self.label_2.setText(_translate("user_dialog", "Phone No"))
         self.user_form_cancel.setText(_translate("user_dialog", "Cancel"))
         self.label_3.setText(_translate("user_dialog", "Last Name"))

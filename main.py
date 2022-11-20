@@ -11,7 +11,6 @@ from ui.main_form import Ui_MainFormUi
 from ui.user_form import UserDialogUi
 
 
-
 class MainWindow:
     def __init__(self):
         # Initializing main app window

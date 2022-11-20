@@ -44,7 +44,7 @@ class MySqlDB:
         try:
             self.dbcursor.execute("create table IF NOT EXISTS books(\
                     ISBN BIGINT(13),\
-                    Book_Name varchar(30),\
+                    Book_Name varchar(255),\
                     Author_FName varchar(30),\
                     Author_LName varchar(30),\
                     PRIMARY KEY (ISBN));")
@@ -178,7 +178,7 @@ class MySqlDB:
             self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
                                     delbooks (in bookid bigint)\
                                      BEGIN\
-                                      delete from book where ISBN = bookid;\
+                                      delete from books where ISBN = bookid;\
                                      END")
 
             self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
@@ -206,7 +206,7 @@ class MySqlDB:
                                         END")
 
             self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
-                                     addbook (in bid bigint, in book_name varchar(30), in fname varchar(30), in lname varchar(30))\
+                                     addbook (in bid bigint, in book_name varchar(255), in fname varchar(30), in lname varchar(30))\
                                         BEGIN\
                                             insert into books values (bid, book_name, fname, lname);\
                                         END")
@@ -219,7 +219,7 @@ class MySqlDB:
                                                     END")
 
             self.dbcursor.execute("CREATE PROCEDURE IF NOT EXISTS\
-                                                 updatebook (in bid bigint, in book_name varchar(30), in fname varchar(30), in lname varchar(30))\
+                                                 updatebook (in bid bigint, in book_name varchar(255), in fname varchar(30), in lname varchar(30))\
                                                     BEGIN\
                                                         update books set Book_Name=book_name, Author_FName=fname, Author_LName=lname\
                                                         where ISBN = bid;\

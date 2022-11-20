@@ -7,8 +7,9 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QComboBox, QM
 
 from database import MySqlDB
 from ui.book_form import BookDialogUi
-from ui.main_form import MainFormUi
+from ui.main_form import Ui_MainFormUi
 from ui.user_form import UserDialogUi
+
 
 
 class MainWindow:
@@ -19,7 +20,7 @@ class MainWindow:
         self.main_win.setWindowTitle("Library Management System")
 
         # Adding ui file
-        self.ui = MainFormUi()
+        self.ui = Ui_MainFormUi()
         self.ui.setupUi(self.main_win)
 
         # Initializing Mysql Cursor

@@ -1,7 +1,7 @@
 import random
 import sys
 
-from PyQt5 import QtWidgets,QtGui
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QDate
 from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QComboBox, QMessageBox, QDialog
 
@@ -42,7 +42,6 @@ class MainWindow:
         self.booksPage()
         self.usersPage()
         self.bookStatusPage()
-
 
     ###############################################################################################################
 
@@ -171,6 +170,7 @@ class MainWindow:
     def refreshfunc(self):
         self.getDataLists()
         self.goto_BookStatus_page()
+
     ###############################################################################################################
 
     ###############################################################################################################
@@ -227,109 +227,21 @@ class MainWindow:
 
     ###############################################################################################################
     # table data and functions for user and books page
-    def loadBooksData(self):
+    def loadTableData(self, TableWidget, records_list: list, column_list):
         # Adding columns to table
-        self.book_table.setRowCount(len(self.books_list))
-        self.book_table.setColumnCount(len(self.books_column_names))
-        self.book_table.setHorizontalHeaderLabels(self.books_column_names)
-        # resizing columns
-        header = self.book_table.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
-
-        # adding data into tables
-        row = 0
-
-        for book in self.books_list:
-            self.book_table.setItem(row, 0, QtWidgets.QTableWidgetItem(str(book[0])))
-            self.book_table.setItem(row, 1, QtWidgets.QTableWidgetItem(book[1]))
-            self.book_table.setItem(row, 2, QtWidgets.QTableWidgetItem(book[2]))
-
-            row += 1
-
-    def loadUsersData(self):
-        self.user_table.setRowCount(len(self.user_list))
-        self.user_table.setColumnCount(len(self.users_column_names))
-        self.user_table.setHorizontalHeaderLabels(self.users_column_names)
-
-        header = self.user_table.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
-
-        row = 0
-
-        for user in self.user_list:
-            self.user_table.setItem(row, 0, QtWidgets.QTableWidgetItem(str(user[0])))
-            self.user_table.setItem(row, 1, QtWidgets.QTableWidgetItem(user[1]))
-            self.user_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(user[2])))
-            row += 1
-
-    def loadIssuedData(self):
-        # Adding columns to table
-        self.issued_table.setRowCount(len(self.issued_list))
-        self.issued_table.setColumnCount(len(self.issued_column_names))
-        self.issued_table.setHorizontalHeaderLabels(self.issued_column_names)
+        TableWidget.setRowCount(len(records_list))
+        TableWidget.setColumnCount(len(column_list))
+        TableWidget.setHorizontalHeaderLabels(column_list)
 
         # resizing columns
-        header = self.issued_table.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(3, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
-        header.setSectionResizeMode(5, QtWidgets.QHeaderView.Stretch)
+        header = TableWidget.horizontalHeader()
+        for x in range(len(column_list)):
+            header.setSectionResizeMode(x, QtWidgets.QHeaderView.Stretch)
 
         # adding data into tables
-        row = 0
-
-        for book in self.issued_list:
-            self.issued_table.setItem(row, 0, QtWidgets.QTableWidgetItem(str(book[0])))
-            self.issued_table.setItem(row, 1, QtWidgets.QTableWidgetItem(str(book[1])))
-            self.issued_table.setItem(row, 2, QtWidgets.QTableWidgetItem(str(book[2])))
-            self.issued_table.setItem(row, 3, QtWidgets.QTableWidgetItem(str(book[3])))
-            self.issued_table.setItem(row, 4, QtWidgets.QTableWidgetItem(str(book[4])))
-            self.issued_table.setItem(row, 5, QtWidgets.QTableWidgetItem(str(book[5])))
-
-            row += 1
-
-    def addBooks(self):
-        book_form = BookForm(book_list=self.books_list, cursor=self.cursor)
-        book_form.exec()
-        self.getDataLists()
-        self.goto_book_page()
-
-    def updateBooks(self):
-        index = self.book_table.currentRow()
-        if index > -1:
-            data = (self.book_table.item(index, 0).text(),)
-            if int(data[0]) in [x[0] for x in self.issued_list]:
-                showErrorMessage("Return the book first", 'Error', 'Book cannot be altered')
-            else:
-                book_form = BookForm(book_list=self.book_name_dict, bid=data[0], cursor=self.cursor)
-                book_form.exec()
-                self.getDataLists()
-                self.goto_book_page()
-        else:
-            showErrorMessage("No Book selected", "Item error", "Book not found")
-
-    def delBooks(self):
-        try:
-            index = self.book_table.currentRow()
-            if index > -1:
-                data = (self.book_table.item(index, 0).text(),)
-                if int(data[0]) in [x[0] for x in self.issued_list]:
-                    showErrorMessage("Book is currently Issued", 'Error', 'Book cannot be deleted')
-                else:
-                    self.cursor.callproc('delbooks', data)
-                    showInfoMessage("Book successfully deleted", "Success", "Record deleted")
-                    self.getDataLists()
-                    self.goto_book_page()
-            else:
-                showErrorMessage("No Book selected", "Item error", "Book not found")
-        except Exception as delete:
-            print("del", delete)
+        for row, book in enumerate(records_list):
+            for column, cell in enumerate(book):
+                TableWidget.setItem(row, column, QtWidgets.QTableWidgetItem(str(cell)))
 
     def addUsers(self):
         user_form = UserForm(user_list=self.user_list, cursor=self.cursor)
@@ -505,21 +417,21 @@ class MainWindow:
 
     def goto_book_page(self):
         try:
-            self.loadBooksData()
+            self.loadTableData(self.book_table, self.books_list, self.books_column_names)
             self.ui.stackedWidget.setCurrentWidget(self.ui.book_page)
         except Exception as e:
             print(e)
 
     def goto_user_page(self):
         try:
-            self.loadUsersData()
+            self.loadTableData(self.user_table, self.user_list, self.users_column_names)
             self.ui.stackedWidget.setCurrentWidget(self.ui.user_page)
         except Exception as e:
             print(e)
 
     def goto_BookStatus_page(self):
         try:
-            self.loadIssuedData()
+            self.loadTableData(self.issued_table, self.issued_table, self.issued_column_names)
             self.ui.stackedWidget.setCurrentWidget(self.ui.book_status_page)
         except Exception as e:
             print(e)

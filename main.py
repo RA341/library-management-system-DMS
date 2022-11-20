@@ -243,22 +243,6 @@ class MainWindow:
             for column, cell in enumerate(book):
                 TableWidget.setItem(row, column, QtWidgets.QTableWidgetItem(str(cell)))
 
-    def loadIssuedData(self):
-        # Adding columns to table
-        self.issued_table.setRowCount(len(self.issued_list))
-        self.issued_table.setColumnCount(len(self.issued_column_names))
-        self.issued_table.setHorizontalHeaderLabels(self.issued_column_names)
-
-        # resizing columns
-        header = self.issued_table.horizontalHeader()
-        for x in range(len(self.issued_column_names)):
-            header.setSectionResizeMode(x, QtWidgets.QHeaderView.Stretch)
-
-        # adding data into tables
-        for row, book in enumerate(self.issued_list):
-            for column, cell in enumerate(book):
-                self.issued_table.setItem(row, column, QtWidgets.QTableWidgetItem(str(cell)))
-
     def addBooks(self):
         book_form = BookForm(book_list=self.books_list, cursor=self.cursor)
         book_form.exec()

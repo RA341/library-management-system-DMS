@@ -1,7 +1,7 @@
 import random
 import sys
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets,QtGui
 from PyQt5.QtCore import QDate
 from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QComboBox, QMessageBox, QDialog
 
@@ -16,6 +16,7 @@ class MainWindow:
         # Initializing main app window
         self.main_win = QMainWindow()
         self.main_win.setFixedSize(1000, 800)
+        self.main_win.setWindowTitle("Library Management System")
 
         # Adding ui file
         self.ui = MainFormUi()
@@ -41,6 +42,7 @@ class MainWindow:
         self.booksPage()
         self.usersPage()
         self.bookStatusPage()
+
 
     ###############################################################################################################
 

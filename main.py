@@ -1,7 +1,7 @@
 import random
 import sys
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QDate
 from PyQt5.QtWidgets import QMainWindow, QApplication, QCompleter, QComboBox, QMessageBox, QDialog
 
@@ -243,6 +243,59 @@ class MainWindow:
             for column, cell in enumerate(book):
                 TableWidget.setItem(row, column, QtWidgets.QTableWidgetItem(str(cell)))
 
+    def loadIssuedData(self):
+        # Adding columns to table
+        self.issued_table.setRowCount(len(self.issued_list))
+        self.issued_table.setColumnCount(len(self.issued_column_names))
+        self.issued_table.setHorizontalHeaderLabels(self.issued_column_names)
+
+        # resizing columns
+        header = self.issued_table.horizontalHeader()
+        for x in range(len(self.issued_column_names)):
+            header.setSectionResizeMode(x, QtWidgets.QHeaderView.Stretch)
+
+        # adding data into tables
+        for row, book in enumerate(self.issued_list):
+            for column, cell in enumerate(book):
+                self.issued_table.setItem(row, column, QtWidgets.QTableWidgetItem(str(cell)))
+
+    def addBooks(self):
+        book_form = BookForm(book_list=self.books_list, cursor=self.cursor)
+        book_form.exec()
+        self.getDataLists()
+        self.goto_book_page()
+
+    def updateBooks(self):
+        index = self.book_table.currentRow()
+        if index > -1:
+            data = (self.book_table.item(index, 0).text(),)
+            if int(data[0]) in [x[0] for x in self.issued_list]:
+                showErrorMessage("Return the book first", 'Error', 'Book cannot be altered')
+            else:
+                book_form = BookForm(book_list=self.book_name_dict, bid=data[0], cursor=self.cursor)
+                book_form.exec()
+                self.getDataLists()
+                self.goto_book_page()
+        else:
+            showErrorMessage("No Book selected", "Item error", "Book not found")
+
+    def delBooks(self):
+        try:
+            index = self.book_table.currentRow()
+            if index > -1:
+                data = (self.book_table.item(index, 0).text(),)
+                if int(data[0]) in [x[0] for x in self.issued_list]:
+                    showErrorMessage("Book is currently Issued", 'Error', 'Book cannot be deleted')
+                else:
+                    self.cursor.callproc('delbooks', data)
+                    showInfoMessage("Book successfully deleted", "Success", "Record deleted")
+                    self.getDataLists()
+                    self.goto_book_page()
+            else:
+                showErrorMessage("No Book selected", "Item error", "Book not found")
+        except Exception as delete:
+            print("del", delete)
+
     def addUsers(self):
         user_form = UserForm(user_list=self.user_list, cursor=self.cursor)
         user_form.exec()
@@ -431,7 +484,7 @@ class MainWindow:
 
     def goto_BookStatus_page(self):
         try:
-            self.loadTableData(self.issued_table, self.issued_table, self.issued_column_names)
+            self.loadTableData(self.issued_table, self.issued_list, self.issued_column_names)
             self.ui.stackedWidget.setCurrentWidget(self.ui.book_status_page)
         except Exception as e:
             print(e)
